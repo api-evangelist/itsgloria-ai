@@ -1,0 +1,75 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  GET on each of the four paid resources documented at
+  https://docs.itsgloria.ai/gloria-data-platform/x402-integration/ on 2026-09-19, without an
+  X-PAYMENT header (no payment was made). Prices cross-checked against the docs table.
+summary: >-
+  Every paid resource Gloria documents answers a REAL x402 challenge: HTTP 402, Content-Type
+  application/json, a body carrying the x402Version 1 envelope ("X-PAYMENT header is required")
+  with one accepts[] entry - scheme exact, network base, USDC (0x8335...2913), a fixed payTo
+  address, maxTimeoutSeconds 60 - and an outputSchema block that describes the resource's HTTP
+  method, queryParams (name, type, description, required) and the JSON shape of the paid response.
+  That block is a provider-published machine-readable contract for the x402 surface, saved
+  verbatim in the challenge files rather than re-authored. The probe hit the documented operation
+  paths, not the base URL (the base URL answers 200 {"message":"It works."}); unknown paths on the
+  same host return a clean 404, so the 402s are resource-specific and not a catch-all. /articles on
+  this host answers 401 "Missing x-api-key header" and is not part of the x402 surface.
+protocol:
+  name: x402
+  version: 1
+  headers_observed: [content-type, x-powered-by, x-frame-options, x-content-type-options, x-xss-protection, referrer-policy, content-security-policy, cf-cache-status]
+  payment_required_header: absent (v1 envelope is in the body only; no PAYMENT-REQUIRED / X-PAYMENT-REQUIRED response header)
+  rate_limit_headers_observed: []
+  scheme: exact
+  max_timeout_seconds: 60
+  accepts_rails:
+  - {network: base, asset: USDC (0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913), decimals: 6}
+  pay_to: '0xCa1271E777C209e171826A681855351f4989cd0c'
+  client_docs: https://x402.gitbook.io/x402/getting-started/quickstart-for-buyers
+  example_client: x402-fetch wrapFetchWithPayment with a viem wallet on Base (from the docs)
+resources:
+- resource: https://api.itsgloria.ai/news
+  status: 402
+  file: itsgloria-ai-news-402-challenge.json
+  price_usd: '0.03'
+  max_amount_required: '30000'
+  description: Get the latest news about a covered news topic, delivering the most recent 10 headlines.
+  input_params: [feed_categories, from_date, to_date]
+  output_schema: array of NewsItem (id, signal, sentiment, sentiment_value, timestamp, feed_categories, short_context, long_context, sources, author, tokens, tweet_url)
+  rest_equivalent: openapi/itsgloria-ai-openapi.yml#getNews
+- resource: https://api.itsgloria.ai/news-ticker-summary
+  status: 402
+  file: itsgloria-ai-news-ticker-summary-402-challenge.json
+  price_usd: '0.031'
+  max_amount_required: '31000'
+  description: 24-hour news summary for a specific token/ticker, combining internal news data with web search results.
+  input_params: [ticker]
+  output_schema: object {summary}
+  rest_equivalent: openapi/itsgloria-ai-openapi.yml#getTickerSummary
+- resource: https://api.itsgloria.ai/news-by-keyword
+  status: 402
+  file: itsgloria-ai-news-by-keyword-402-challenge.json
+  price_usd: '0.05'
+  max_amount_required: '50000'
+  description: Search news articles by keyword, returning the most recent headlines matching the query.
+  input_params: [keyword]
+  output_schema: array of NewsItem
+  rest_equivalent: openapi/itsgloria-ai-openapi.yml#getNews (keyword parameter)
+- resource: https://api.itsgloria.ai/recaps
+  status: 402
+  file: itsgloria-ai-recaps-402-challenge.json
+  price_usd: '0.10'
+  max_amount_required: '100000'
+  description: Recap of the news or summary of a covered news topic over the past 12-24 hours.
+  input_params: [feed_category]
+  output_schema: object {feed_category, timeframe, recap, created_at}
+  rest_equivalent: openapi/itsgloria-ai-openapi.yml#getRecaps
+negative_control:
+  url: https://api.itsgloria.ai/narratives
+  status: 404
+  note: unknown / non-x402 paths return a 149-byte text/html 404, so the 402s above are resource-specific
+mcp_surface:
+  note: >-
+    The hosted MCP server's two paid tools (get_enriched_news, get_ticker_summary) return these
+    payment instructions rather than calling the resource; see mcp/itsgloria-ai-mcp.yml.

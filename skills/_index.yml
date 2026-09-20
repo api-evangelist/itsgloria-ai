@@ -1,0 +1,24 @@
+generated: '2026-09-19'
+method: generated
+source: >-
+  Packaged Agent Skills generated from openapi/itsgloria-ai-openapi.yml and the docs at
+  docs.itsgloria.ai. Every step is grounded in an operationId verified verbatim in the spec;
+  cross-cutting rules cite ../conventions/, ../errors/, ../authentication/ and ../x402/. No
+  provider-published skills or AGENTS.md were found (searched www, docs and the gloria-mcp repo).
+skills:
+- file: itsgloria-ai-read-latest-news.md
+  name: Read the latest curated news
+  api: openapi/itsgloria-ai-openapi.yml
+  operations: [getPublicToken, getAvailableFeedCategories, getNews, getNewsById]
+- file: itsgloria-ai-recap-and-ticker-summary.md
+  name: Get a category recap and a ticker summary
+  api: openapi/itsgloria-ai-openapi.yml
+  operations: [getAvailableFeedCategories, getRecaps, getTickerSummary]
+- file: itsgloria-ai-wallet-auth-and-api-tokens.md
+  name: Authenticate with a wallet and manage API tokens
+  api: openapi/itsgloria-ai-openapi.yml
+  operations: [getNonce, verifySignature, createApiToken, listApiTokens, revokeApiToken]
+- file: itsgloria-ai-stream-news-websocket.md
+  name: Stream news in real time over WebSocket
+  api: openapi/itsgloria-ai-openapi.yml
+  operations: [getAvailableFeedCategories, websocketFeed]

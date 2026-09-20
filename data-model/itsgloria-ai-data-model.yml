@@ -1,0 +1,90 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  openapi/itsgloria-ai-openapi.yml components.schemas (12 schemas) and the field descriptions at
+  https://docs.itsgloria.ai/gloria-data-platform/api-integration/; relationships inferred from
+  id-reference fields (narrative_id, feed_categories, feed_category, allowed_feed_categories) and
+  the Narrative.content array.
+entities:
+- name: NewsItem
+  id_field: id
+  id_format: UUID
+  fields:
+  - id
+  - signal
+  - 'sentiment (bullish | bearish | neutral)'
+  - 'sentiment_value (0-1)'
+  - 'timestamp (unix seconds)'
+  - 'feed_categories (array of category codes)'
+  - short_context
+  - long_context
+  - 'sources (array of URLs)'
+  - author
+  - 'tokens (array of symbols)'
+  - tweet_url
+  - 'narrative_id (nullable)'
+  operations: [getNews, getNewsById, websocketFeed]
+- name: Narrative
+  id_field: narrative_id
+  id_format: UUID
+  fields: [narrative_id, updated_at, tag, summary, 'content (array of NewsItem)']
+  operations: [getNarratives, getNarrativeById]
+- name: FeedCategory
+  id_field: code
+  id_format: 'slug (e.g. crypto, ai_agents, on_chain_whale)'
+  fields: [code, name, 'recap_timeframe (12h | 24h | null)']
+  operations: [getAvailableFeedCategories]
+  count: 19
+- name: Recap
+  fields: [feed_category, timeframe, recap, created_at]
+  operations: [getRecaps]
+- name: Article
+  id_field: id
+  id_format: UUID
+  fields: [id, 'data (object)', created_at]
+  operations: [getArticles, getArticleById]
+- name: TokenSummaryResponse
+  fields: [summary]
+  operations: [getTickerSummary]
+- name: ApiToken
+  fields: [name, 'allowed_feed_categories (array of category codes)', token, issued_at, expires_at]
+  operations: [createApiToken, listApiTokens, revokeApiToken]
+- name: SocialPlatformBot
+  id_field: id
+  fields: [id, label, 'platform (telegram | discord)', platform_user_id, platform_channel_id, created_at, wallet_address]
+  operations: [registerBot, listBots, deleteBot]
+- name: Wallet (implicit principal)
+  id_field: wallet_address
+  id_format: 0x-prefixed Ethereum address
+  note: the SIWE-authenticated subject; owns ApiTokens and SocialPlatformBots
+relationships:
+- from: NewsItem
+  to: Narrative
+  type: belongs_to
+  via: narrative_id
+  nullable: true
+- from: Narrative
+  to: NewsItem
+  type: has_many
+  via: content
+- from: NewsItem
+  to: FeedCategory
+  type: has_many
+  via: feed_categories (codes)
+- from: Recap
+  to: FeedCategory
+  type: belongs_to
+  via: feed_category
+- from: ApiToken
+  to: FeedCategory
+  type: has_many
+  via: allowed_feed_categories (permission scope)
+- from: Wallet
+  to: ApiToken
+  type: has_many
+  via: authenticated session
+- from: Wallet
+  to: SocialPlatformBot
+  type: has_many
+  via: wallet_address
+render: null

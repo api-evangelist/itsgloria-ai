@@ -1,0 +1,40 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: >-
+  Harvested from artifacts collected this run (well-known/, security/, lifecycle/, conformance/), the
+  privacy policy and terms at www.itsgloria.ai, the docs sitemap at docs.itsgloria.ai, and live probes
+  of the conventional paths below on 2026-09-19. Nothing is inferred; which regimes reach Gloria is
+  decided by the Kin Score regime map, not here.
+entity:
+  legal_name: Gloria AI Ltd.
+  incorporated: British Virgin Islands (terms of use, privacy policy)
+  privacy_contact: privacy@gloria.ai
+  policy_dates: 'terms "Last Updated: August 2025"; privacy "Effective Date: August 2025"'
+signals:
+  data_subject_request:
+    url: https://www.itsgloria.ai/privacy-policy
+    rights_stated: [access or update, deletion (right to be forgotten), object to or restrict processing, data portability, withdraw consent]
+    channel: email privacy@gloria.ai (section 9 "Your Rights")
+    note: a stated rights list and contact channel, no request form or API endpoint
+probed_absent:
+- {url: https://www.itsgloria.ai/accessibility, status: 404}
+- {url: https://www.itsgloria.ai/legal/subprocessors, status: 404}
+- {url: https://www.itsgloria.ai/transparency, status: 404}
+- {url: https://www.itsgloria.ai/security, status: 404}
+- {url: https://www.itsgloria.ai/.well-known/security.txt, status: 404}
+- {url: https://docs.itsgloria.ai/sitemap.xml, status: 200, note: 16 URLs, none about data residency, export, age signals, SBOM or support lifetime}
+not_found:
+  sbom: no bill of materials published (search only; never derived)
+  support_lifetime: no versioning/support-period page (lifecycle/)
+  accessibility_conformance: no VPAT or WCAG statement
+  training_data_summary: none - the docs describe the LLM pipeline stages but publish no training-data summary
+  ai_transparency: none beyond the terminal banner "Outputs are interpretive and not recommendations" and terms section 3.2 (AI-generated content disclaimer); no dedicated disclosure page
+  global_privacy_control: no published GPC statement (not tested by header, per rule)
+  subprocessors: privacy policy names provider categories (hosting, infrastructure, analytics, billing) but no dated subprocessor table
+  data_residency: none - privacy section 8 says data may be processed outside the user's jurisdiction; no region controls
+  incident_notification: no stated breach-notification SLA
+  age_assurance: privacy section 10 says services are not intended for users under 18; no assurance mechanism
+  notice_and_action: none
+  transparency_report: none
+  exit_assistance: none

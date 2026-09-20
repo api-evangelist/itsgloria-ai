@@ -1,0 +1,72 @@
+generated: '2026-09-19'
+method: searched
+source: openapi/itsgloria-ai-openapi.yml
+docs: https://docs.itsgloria.ai/gloria-data-platform/api-integration/#authentication
+sources:
+- openapi/itsgloria-ai-openapi.yml (securitySchemes BearerAuth, TokenQuery; info.description auth walkthrough)
+- https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+- https://docs.itsgloria.ai/gloria-data-platform/x402-integration/
+- https://www.itsgloria.ai/mcp
+- live probes of ai-hub.cryptobriefing.com, api.itsgloria.ai and mcp.itsgloria.ai on 2026-09-19
+summary:
+  types:
+  - http
+  - apiKey
+  api_key_in:
+  - query
+  http_schemes:
+  - bearer (JWT)
+  issuance:
+  - siwe-wallet-signature
+  - api-token
+  - public-token
+  surfaces:
+    rest: JWT bearer / ?token= (required on every operation except getNonce, verifySignature, getPublicToken, getAvailableFeedCategories, healthCheck)
+    websocket: JWT as ?token= on the wss handshake
+    x402: no credential - X-PAYMENT header per request (api.itsgloria.ai); /articles there wants an x-api-key header instead
+    mcp_remote: none (anonymous initialize/tools/list; paid tools hand back x402 instructions)
+    mcp_stdio: GLORIA_API_TOKEN environment variable (an API token)
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+  header: 'Authorization: Bearer <token>'
+  sources:
+  - openapi/itsgloria-ai-openapi.yml
+- name: TokenQuery
+  type: apiKey
+  in: query
+  parameter: token
+  description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+  sources:
+  - openapi/itsgloria-ai-openapi.yml
+flows:
+- name: SIWE wallet sign-in (EIP-4361)
+  steps:
+  - 'GET /auth/nonce -> {"nonce": "..."} (getNonce, no auth)'
+  - sign an EIP-4361 message containing the nonce with an Ethereum wallet
+  - 'POST /auth/verify {"message", "signature"} -> {"access_token": "<jwt>", "is_admin": false} (verifySignature)'
+  - use the JWT as Bearer or ?token=
+  docs: https://docs.itsgloria.ai/gloria-data-platform/api-integration/#wallet-authentication
+- name: API token (recommended by the docs)
+  steps:
+  - 'authenticate once (SIWE), then POST /user/api-tokens {"name", "allowed_feed_categories"} (createApiToken) - or generate in the browser at https://www.itsgloria.ai/api-keys-new'
+  - the ApiToken carries token, issued_at, expires_at and is scoped to the chosen feed categories for life
+  - GET /user/api-tokens lists, DELETE /user/api-tokens revokes
+  docs: https://docs.itsgloria.ai/gloria-data-platform/api-integration/#api-token-recommended
+- name: Public token (anonymous, read-only)
+  steps:
+  - 'GET /auth/public-token -> {"access_token": {"name": "Auth", "allowed_feed_categories": "[]", "token": "<jwt>"}} (getPublicToken)'
+  - roles ["public"], no feed permissions; observed to read GET /news on 2026-09-19
+  docs: https://docs.itsgloria.ai/gloria-data-platform/api-integration/#public-token
+permissions:
+  model: feed-category scoping - each token carries allowed_feed_categories; a request for another category answers 403 Forbidden
+  categories: 19 codes from GET /available-feed-categories
+observed:
+  missing_token: 'HTTP 401 {"detail":"Missing token"} on every gated path of ai-hub.cryptobriefing.com'
+  x402_missing_payment: 'HTTP 402 x402Version 1 body on api.itsgloria.ai/news, /recaps, /news-ticker-summary, /news-by-keyword'
+oauth2: none
+openIdConnect: none
+mutualTLS: none

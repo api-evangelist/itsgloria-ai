@@ -64,5 +64,7 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Gloria is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry) and added to the network as a stub for full-pipeline profiling.
+Gloria (Gloria AI Ltd., a Crypto Briefing product) is an AI-powered crypto and prediction-market news intelligence platform. Its data core is exposed as a 20-operation REST API (OpenAPI 3.0.3, base https://ai-hub.cryptobriefing.com, SIWE wallet / API-token auth), a WebSocket push feed, a hosted MCP server at https://mcp.itsgloria.ai/mcp (7 tools, anonymous tools/list) and an x402 pay-per-request API at https://api.itsgloria.ai (USDC on Base).
 - https://itsgloria.ai/
+- https://docs.itsgloria.ai/
+- https://www.itsgloria.ai/mcp

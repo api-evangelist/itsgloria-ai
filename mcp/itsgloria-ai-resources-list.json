@@ -1,0 +1,16 @@
+{
+  "resources": [
+    {
+      "name": "about",
+      "uri": "gloria://about",
+      "description": "About Gloria AI and its data coverage.",
+      "mimeType": "text/plain"
+    },
+    {
+      "name": "categories_resource",
+      "uri": "gloria://categories",
+      "description": "Current feed categories with descriptions.",
+      "mimeType": "text/plain"
+    }
+  ]
+}

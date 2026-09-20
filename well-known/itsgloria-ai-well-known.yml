@@ -1,0 +1,247 @@
+generated: '2026-09-19'
+method: searched
+description: >-
+  Results of probing the closed /.well-known/ path list (plus /apis.json, /apis.yml and /security.txt)
+  on every host this record knows: the registrable domain and www, the docs host, the REST base the
+  docs publish (ai-hub.cryptobriefing.com), the x402 host (api.itsgloria.ai) and the MCP host
+  (mcp.itsgloria.ai). ONE real document was served: an OpenAI plugin manifest at
+  https://www.itsgloria.ai/.well-known/ai-plugin.json (name_for_model gloria_terminal, api.type openapi
+  pointing at https://itsgloria.ai/openapi.json, auth service_http bearer) - saved verbatim. The apex
+  itsgloria.ai answers 301 to www for every path; www serves its Next.js 404 page (25,090 bytes,
+  text/html) for every other path and a clean 404 for the negative control, so the ai-plugin hit is
+  resource-specific and not a catch-all. mcp.itsgloria.ai answers text/plain 404 for every path,
+  including RFC 9728 oauth-protected-resource (the MCP server is anonymous, so no protected-resource
+  metadata is expected). ai-hub.cryptobriefing.com forbids the whole /.well-known/ directory at nginx
+  (403 for every path including the negative control) - recorded as 403, not as a hit. No A2A agent
+  card (agent-card.json or legacy agent.json) exists on any host, although this provider arrived via
+  the a2a-registry harvest source.
+hit_count: 1
+hosts:
+- host: https://itsgloria.ai
+  note: apex 301s every path to https://www.itsgloria.ai - see the www host for the real answers
+  documents:
+  - path: /.well-known/security.txt
+    status: 301
+  - path: /.well-known/openid-configuration
+    status: 301
+  - path: /.well-known/oauth-authorization-server
+    status: 301
+  - path: /.well-known/oauth-protected-resource
+    status: 301
+  - path: /.well-known/api-catalog
+    status: 301
+  - path: /.well-known/ai-plugin.json
+    status: 301
+  - path: /.well-known/ucp.json
+    status: 301
+  - path: /.well-known/acp.json
+    status: 301
+  - path: /.well-known/aauth-resource.json
+    status: 301
+  - path: /.well-known/apis.json
+    status: 301
+  - path: /apis.json
+    status: 301
+  - path: /apis.yml
+    status: 301
+  - path: /.well-known/agent-card.json
+    status: 301
+  - path: /.well-known/agent.json
+    status: 301
+- host: https://www.itsgloria.ai
+  path_echo_control: passed
+  soft_404_control:
+    path: /.well-known/itsgloria-ai-negative-control-b18cc88f.json
+    status: 404
+    bytes: 25090
+    note: the Next.js 404 page; every miss below returned this same 25,090-byte text/html body
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/api-catalog.json
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    type: application/json
+    file: itsgloria-ai-ai-plugin.json
+    note: OpenAI plugin manifest v1; api.url https://itsgloria.ai/openapi.json (the same 20-operation OpenAPI saved under openapi/)
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://docs.itsgloria.ai
+  path_echo_control: passed
+  soft_404_control:
+    path: /.well-known/itsgloria-ai-negative-control-b18cc88f.json
+    status: 404
+    bytes: 9676
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/api-catalog.json
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /llms.txt
+    status: 404
+  - path: /llms-full.txt
+    status: 404
+- host: https://api.itsgloria.ai
+  path_echo_control: passed
+  soft_404_control:
+    path: /.well-known/itsgloria-ai-negative-control-b18cc88f.json
+    status: 404
+    bytes: 194
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/api-catalog.json
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://mcp.itsgloria.ai
+  note: >-
+    the MCP resource server (RFC 9728 puts protected-resource metadata here). Every path returns a
+    9-byte text/plain "Not Found"; the server answers initialize and tools/list anonymously, so the
+    absence of oauth-protected-resource is consistent with an unauthenticated resource.
+  documents:
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/oauth-protected-resource/mcp
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/ucp.json
+    status: 404
+  - path: /.well-known/acp.json
+    status: 404
+  - path: /.well-known/aauth-resource.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://ai-hub.cryptobriefing.com
+  path_echo_control: not-applicable
+  soft_404_control:
+    path: /.well-known/itsgloria-ai-negative-control-9f1e.json
+    status: 403
+    bytes: 564
+    note: nginx returns 403 Forbidden for the entire /.well-known/ directory; nothing is served there
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/oauth-protected-resource
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/ai-plugin.json
+    status: 403
+  - path: /.well-known/ucp.json
+    status: 403
+  - path: /.well-known/acp.json
+    status: 403
+  - path: /.well-known/aauth-resource.json
+    status: 403
+  - path: /.well-known/apis.json
+    status: 403
+  - path: /apis.json
+    status: 404
+  - path: /apis.yml
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 403
+  - path: /.well-known/agent.json
+    status: 403

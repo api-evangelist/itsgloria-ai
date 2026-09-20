@@ -1,0 +1,46 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  npm registry search (itsgloria, gloria-ai, gloria terminal, gloriaterminal, gloria mcp), PyPI JSON
+  metadata, GitHub search and the provider's own docs/MCP page, 2026-09-19. Versions and dates read
+  from registry.npmjs.org and pypi.org/pypi/<pkg>/json.
+summary: >-
+  Gloria ships ONE first-party package - the open-source MCP server gloria-mcp on PyPI - and no
+  first-party client SDK in any registry; the docs integrate by raw HTTP (curl / fetch examples) and
+  the x402 docs point at the third-party x402-fetch + viem client stack. Two community packages wrap
+  the API. No SDKs pointer is emitted because none of these is an official client library.
+packages:
+- language: python
+  registry: pypi
+  name: gloria-mcp
+  url: https://pypi.org/project/gloria-mcp/
+  install: pip install gloria-mcp
+  run: uv run gloria-mcp
+  version: 1.0.0
+  published: '2026-03-12'
+  official: true
+  kind: mcp-server
+  license: MIT
+  repository: https://github.com/cryptobriefing-labs/gloria-mcp
+  note: MCP server (stdio or streamable-http) over the REST API; requires GLORIA_API_TOKEN; depends on mcp[cli]>=1.26.0, httpx.
+- language: typescript
+  registry: npm
+  name: gloria-sdk
+  url: https://www.npmjs.com/package/gloria-sdk
+  install: npm install gloria-sdk
+  version: 0.0.4
+  published: '2026-04-09'
+  official: false
+  kind: client-sdk
+  repository: https://github.com/tobalo/gloria-sdk
+  note: Community TypeScript client (news, recaps, WebSocket subscriptions with arktype runtime validation) by GitHub user tobalo; not published or endorsed by Gloria.
+- language: javascript
+  registry: npm
+  name: '@pipedream/gloria_ai'
+  url: https://www.npmjs.com/package/@pipedream/gloria_ai
+  install: npm install @pipedream/gloria_ai
+  version: 0.1.0
+  published: '2025-02-03'
+  official: false
+  kind: integration-component
+  note: Pipedream connector component for Gloria AI; maintained by Pipedream.

@@ -1,0 +1,36 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://docs.itsgloria.ai/ (sitemap walked: no versioning, changelog, deprecation, SLA or status
+  page exists), https://docs.itsgloria.ai/roadmap/, openapi/itsgloria-ai-openapi.yml (info.version,
+  deprecated flags), https://www.itsgloria.ai/terms-of-use, probes of www.itsgloria.ai/status,
+  /changelog (both 404) on 2026-09-19.
+versioning:
+  scheme: none
+  current: '1.0.0'
+  mechanism: no version segment in paths, no version header; info.version 1.0.0 in the OpenAPI
+  docs: null
+  notes: >-
+    The MCP server reports version 1.26.0 (serverInfo) and the terminal footer says "GLORIA AI
+    TERMINAL v2.1"; neither is exposed as an API version selector.
+deprecation:
+  policy_url: null
+  sunset_header: false
+  notes: no deprecation policy published; the terms (section 11/12) reserve the right to change or terminate services without notice.
+sla:
+  url: null
+  uptime_target: null
+  notes: terms of use section 8 - services provided "as is" and "as available" with no availability warranty; Enterprise tier lists "dedicated support" only.
+status_page: null
+changelog: null
+roadmap: https://docs.itsgloria.ai/roadmap/
+roadmap_phases:
+- 'Phase I AI Integration [COMPLETED] - news discovery framework Q3 2024; Gloria agent on X Q1 2025'
+- 'Phase II Smart News Delivery [IN PROGRESS] - Data Platform API beta May 2025; customizable feeds + full API access V1 Q2 2025'
+- 'Phase III Monetization & Customization [Q3 2025] - natural-language interface, on-chain data providers, graph-based narrative backend'
+- 'Phase IV Expansion - consumer terminal Q4 2025; signals beyond news Q4 2025 / Q1 2026'
+token_lifetimes:
+  jwt_from_siwe: expiry not documented
+  api_token: ApiToken carries issued_at and expires_at (long-lived; value not documented)
+  public_token: the anonymous public token carries an exp claim (roughly 12 months out when probed 2026-09-19)
+deprecated_operations: []

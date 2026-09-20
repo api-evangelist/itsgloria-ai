@@ -1,0 +1,16 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Gloria Terminal",
+  "name_for_model": "gloria_terminal",
+  "description_for_human": "AI-powered crypto intelligence terminal with real-time news, prediction markets, and market narratives.",
+  "description_for_model": "Access real-time crypto news with sentiment analysis, market narratives, category recaps, and articles. Requires JWT API key obtained via wallet signature authentication.",
+  "api": {
+    "type": "openapi",
+    "url": "https://itsgloria.ai/openapi.json"
+  },
+  "auth": {
+    "type": "service_http",
+    "authorization_type": "bearer"
+  },
+  "logo_url": "https://itsgloria.ai/gloria.png"
+}

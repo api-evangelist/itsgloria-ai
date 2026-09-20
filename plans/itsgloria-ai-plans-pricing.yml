@@ -1,0 +1,94 @@
+generated: '2026-09-19'
+method: searched
+source: https://www.itsgloria.ai/pricing
+sources:
+- https://www.itsgloria.ai/pricing
+- https://docs.itsgloria.ai/gloria-data-platform/x402-integration/
+provider: Gloria
+providerId: itsgloria-ai
+plan_count: 5
+currency: USD
+description: >-
+  Gloria News Terminal is sold in three self-serve tiers plus an enterprise tier, priced monthly with an
+  "annually - save 33%" toggle (the annual amounts are rendered client-side and are not stated in the
+  served HTML, so only the monthly prices are recorded). A second "STAKE" toggle offers access by
+  staking the $GLORIA token instead of paying by card; the staking thresholds are likewise rendered
+  client-side and are not recorded. API access begins at the Elite tier (50k requests/month);
+  WebSocket streaming and custom feed categories are Enterprise-only. Separately, the x402 API is
+  pay-per-request in USDC on Base with no account.
+plans:
+- id: free
+  name: Free
+  price: 0
+  currency: USD
+  billing_period: month
+  features:
+    news_latency: real-time
+    feed_categories: all
+    news_panels: 3
+    market_recaps: daily
+    api_access: false
+    websocket_streaming: false
+    news_bot_telegram_discord: false
+    support: Discord
+- id: plus
+  name: Plus
+  price: 9
+  currency: USD
+  billing_period: month
+  annual_discount: 'save 33% (amount not stated in served HTML)'
+  features:
+    news_latency: real-time
+    feed_categories: all
+    news_panels: 6+
+    market_recaps: hourly
+    api_access: false
+    websocket_streaming: false
+    news_bot_telegram_discord: false
+    support: Discord
+- id: elite
+  name: Elite
+  price: 19
+  currency: USD
+  billing_period: month
+  annual_discount: 'save 33% (amount not stated in served HTML)'
+  included_quota: 50,000 API requests per month
+  overage: not stated
+  features:
+    news_latency: real-time
+    feed_categories: all
+    news_panels: 6+
+    market_recaps: hourly
+    api_access: true
+    api_quota: 50k requests/month
+    websocket_streaming: false
+    news_bot_telegram_discord: true
+    support: Discord
+- id: enterprise
+  name: Enterprise
+  price: custom
+  currency: USD
+  billing_period: custom
+  features:
+    news_latency: real-time
+    feed_categories: all + custom
+    news_panels: 6+
+    market_recaps: hourly
+    api_access: true
+    api_quota: custom
+    websocket_streaming: true
+    news_bot_telegram_discord: true
+    support: dedicated
+  cta: Contact sales
+- id: x402-pay-per-request
+  name: x402 pay-per-request API
+  type: usage-based
+  currency: USDC (Base)
+  billing_period: per request
+  account_required: false
+  entries:
+  - {resource: GET /news, price: '0.03'}
+  - {resource: GET /news-ticker-summary, price: '0.031'}
+  - {resource: GET /news-by-keyword, price: '0.05'}
+  - {resource: GET /recaps, price: '0.10'}
+  note: prices verified against the live 402 challenges (maxAmountRequired 30000 / 31000 / 50000 / 100000 in 6-decimal USDC)

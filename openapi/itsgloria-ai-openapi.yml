@@ -1,0 +1,920 @@
+openapi: 3.0.3
+info:
+  title: Gloria Terminal API
+  version: 1.0.0
+  description: 'AI-powered crypto intelligence API providing real-time news with sentiment analysis, market narratives,
+    category recaps, and articles.
+
+
+    ## Authentication
+
+
+    Most endpoints require a JWT token obtained via wallet signature (SIWE):
+
+
+    1. **Get nonce** — `GET /auth/nonce` returns a one-time nonce.
+
+    2. **Sign message** — Sign an [EIP-4361](https://eips.ethereum.org/EIPS/eip-4361) message containing the nonce
+    with your Ethereum wallet.
+
+    3. **Verify signature** — `POST /auth/verify` with the signed message and signature to receive a JWT `access_token`.
+
+    4. **Use token** — Pass the token on all subsequent requests via `Authorization: Bearer <token>` header or `?token=<token>`
+    query parameter.
+
+
+    Alternatively, generate long-lived API keys via `POST /user/api-tokens` (requires an authenticated session first).
+
+
+    A public token with limited access is available via `GET /auth/public-token`.'
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+servers:
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by
+    API Evangelist)
+- url: https://ai.gloriaterminal.com
+  description: Production (as published in the provider OpenAPI; host did not resolve on 2026-09-19)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: Authentication
+  description: Wallet-based authentication (SIWE) and token management
+- name: News
+  description: Real-time crypto news feed with sentiment analysis
+- name: Articles
+  description: Long-form articles generated from news events
+- name: Recaps
+  description: Periodic summaries per feed category
+- name: Narratives
+  description: Market narrative threads grouping related news
+- name: Categories
+  description: Available feed categories
+- name: API Keys
+  description: Manage long-lived API tokens
+- name: WebSocket
+  description: Real-time news feed via WebSocket
+- name: Bots
+  description: Social platform bot registration (Telegram, Discord)
+- name: Health
+  description: Service health checks
+paths:
+  /auth/nonce:
+    get:
+      operationId: getNonce
+      tags:
+      - Authentication
+      summary: Get authentication nonce
+      description: Returns a one-time nonce to include in the SIWE message before signing.
+      security: []
+      responses:
+        '200':
+          description: Nonce generated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - nonce
+                properties:
+                  nonce:
+                    type: string
+                    description: One-time nonce string
+  /auth/verify:
+    post:
+      operationId: verifySignature
+      tags:
+      - Authentication
+      summary: Verify wallet signature
+      description: Verifies an EIP-4361 (SIWE) signed message and returns a JWT access token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+      responses:
+        '200':
+          description: Signature verified, JWT issued
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - access_token
+                - is_admin
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token
+                  is_admin:
+                    type: boolean
+                    description: Whether the wallet has admin privileges
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /auth/public-token:
+    get:
+      operationId: getPublicToken
+      tags:
+      - Authentication
+      summary: Get a public access token
+      description: Returns a JWT token with anonymous access to public feed categories.
+      security: []
+      responses:
+        '200':
+          description: Public token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - access_token
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token with public-only permissions
+  /news:
+    get:
+      operationId: getNews
+      tags:
+      - News
+      summary: List news items
+      description: Returns a paginated list of news items with optional filtering by category, date range, and keyword.
+      parameters:
+      - name: feed_categories
+        in: query
+        description: Comma-separated feed category codes (e.g. `crypto,macro`). Omit for all categories.
+        schema:
+          type: string
+      - name: from_date
+        in: query
+        description: Start date filter (YYYY-MM-DD)
+        schema:
+          type: string
+          format: date
+      - name: to_date
+        in: query
+        description: End date filter (YYYY-MM-DD)
+        schema:
+          type: string
+          format: date
+      - name: keyword
+        in: query
+        description: Filter by keyword in headlines
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Items per page
+        schema:
+          type: integer
+          default: 20
+      - name: page
+        in: query
+        description: Page number (1-indexed)
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+      responses:
+        '200':
+          description: Paginated news list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewsItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /news/{id}:
+    get:
+      operationId: getNewsById
+      tags:
+      - News
+      summary: Get a single news item
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: News item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /news-ticker-summary:
+    get:
+      operationId: getTickerSummary
+      tags:
+      - News
+      summary: Get 24-hour summary for a token
+      description: Generates an AI summary of the last 24 hours of news for a specific token or ticker.
+      parameters:
+      - name: ticker
+        in: query
+        required: true
+        description: Token symbol or name (e.g. `ZRO`, `LayerZero`)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Token summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenSummaryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /articles:
+    get:
+      operationId: getArticles
+      tags:
+      - Articles
+      summary: List articles
+      description: Returns a paginated list of articles with optional filtering.
+      parameters:
+      - name: limit
+        in: query
+        description: Items per page (max 100)
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
+      - name: page
+        in: query
+        description: Page number (1-indexed)
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+      - name: category
+        in: query
+        description: Filter by category
+        schema:
+          type: string
+      - name: search
+        in: query
+        description: Search in headline and content
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Filter by article type
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Paginated article list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /articles/{article_id}:
+    get:
+      operationId: getArticleById
+      tags:
+      - Articles
+      summary: Get a single article
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /recaps:
+    get:
+      operationId: getRecaps
+      tags:
+      - Recaps
+      summary: Get a category recap
+      description: Returns an AI-generated summary of recent news for a feed category and timeframe.
+      parameters:
+      - name: feed_category
+        in: query
+        required: true
+        description: Feed category code (e.g. `crypto`, `macro`, `defi`)
+        schema:
+          type: string
+      - name: timeframe
+        in: query
+        required: true
+        description: Recap timeframe (e.g. `12h`, `24h`, `8h`)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Category recap
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recap'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /narratives:
+    get:
+      operationId: getNarratives
+      tags:
+      - Narratives
+      summary: List narratives
+      description: Returns all active market narrative threads.
+      responses:
+        '200':
+          description: Narrative list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Narrative'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /narratives/{id}:
+    get:
+      operationId: getNarrativeById
+      tags:
+      - Narratives
+      summary: Get a single narrative
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Narrative
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Narrative'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /available-feed-categories:
+    get:
+      operationId: getAvailableFeedCategories
+      tags:
+      - Categories
+      summary: List available feed categories
+      description: Returns all feed categories available for filtering and subscription. No authentication required.
+      security: []
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedCategory'
+  /user/api-tokens:
+    post:
+      operationId: createApiToken
+      tags:
+      - API Keys
+      summary: Create an API token
+      description: Generates a long-lived API token scoped to specific feed categories. Tokens expire after 5 years.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '201':
+          description: Token created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiToken'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: listApiTokens
+      tags:
+      - API Keys
+      summary: List API tokens
+      description: Returns all active (non-revoked) API tokens for the authenticated user.
+      responses:
+        '200':
+          description: Token list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiToken'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      operationId: revokeApiToken
+      tags:
+      - API Keys
+      summary: Revoke an API token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - token
+              properties:
+                token:
+                  type: string
+                  description: The JWT token string to revoke
+      responses:
+        '204':
+          description: Token revoked
+        '400':
+          description: Token not found or does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /ws/feed:
+    get:
+      operationId: websocketFeed
+      tags:
+      - WebSocket
+      summary: Real-time news WebSocket feed
+      description: 'WebSocket endpoint for receiving real-time news updates.
+
+
+        **Connection:** `wss://ai.gloriaterminal.com/ws/feed?token=<jwt>`
+
+
+        **Subscribe to a category:**
+
+        ```json
+
+        { "type": "SUBSCRIBE", "feed_category": "crypto" }
+
+        ```
+
+
+        **Unsubscribe:**
+
+        ```json
+
+        { "type": "UNSUBSCRIBE", "feed_category": "crypto" }
+
+        ```
+
+
+        **Keep-alive (ping/pong):**
+
+        ```json
+
+        { "type": "PING" }
+
+        ```
+
+
+        **Server messages:**
+
+        - `CONNECTED` — connection established
+
+        - `SUBSCRIBED` / `UNSUBSCRIBED` — subscription confirmation
+
+        - `PONG` — keep-alive response with timestamp
+
+        - `ERROR` — error message
+
+        - News items are broadcast as `NewsItem` objects to subscribed categories.'
+      parameters:
+      - name: token
+        in: query
+        required: true
+        description: JWT access token
+        schema:
+          type: string
+      responses:
+        '101':
+          description: Switching Protocols — WebSocket connection established
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /user/social-platform-bots:
+    put:
+      operationId: registerBot
+      tags:
+      - Bots
+      summary: Register a social platform bot
+      description: Registers a bot on a social platform (e.g. Telegram, Discord) to receive news updates.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBotRequest'
+      responses:
+        '201':
+          description: Bot registered
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - id
+                properties:
+                  id:
+                    type: string
+                    description: Bot registration ID
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: listBots
+      tags:
+      - Bots
+      summary: List registered bots
+      description: Returns all social platform bots registered by the authenticated user.
+      responses:
+        '200':
+          description: Bot list
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - bots
+                properties:
+                  bots:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SocialPlatformBot'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteBot
+      tags:
+      - Bots
+      summary: Delete a registered bot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - id
+              properties:
+                id:
+                  type: string
+                  description: Bot registration ID to delete
+      responses:
+        '200':
+          description: Bot deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /health:
+    get:
+      operationId: healthCheck
+      tags:
+      - Health
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - status
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+  schemas:
+    VerifyRequest:
+      type: object
+      required:
+      - message
+      - signature
+      properties:
+        message:
+          type: string
+          description: EIP-4361 (SIWE) formatted message containing the nonce
+        signature:
+          type: string
+          description: EIP-191 signature of the message
+    NewsItem:
+      type: object
+      required:
+      - id
+      - signal
+      - sentiment
+      - sentiment_value
+      - feed_categories
+      - short_context
+      - long_context
+      - sources
+      - author
+      - tokens
+      properties:
+        id:
+          type: string
+        signal:
+          type: string
+          description: Headline / news signal
+        sentiment:
+          type: string
+          description: Sentiment label (e.g. bullish, bearish, neutral)
+        sentiment_value:
+          type: number
+          format: float
+          description: Sentiment score between 0 and 1
+        timestamp:
+          type: number
+          format: float
+          nullable: true
+          description: Unix timestamp of the news event
+        feed_categories:
+          type: array
+          items:
+            type: string
+          description: Category codes this item belongs to
+        short_context:
+          type: string
+          description: Brief summary
+        long_context:
+          type: string
+          description: Detailed summary
+        sources:
+          type: array
+          items:
+            type: string
+          description: Source URLs
+        author:
+          type: string
+          description: Original author / Twitter handle
+        tokens:
+          type: array
+          items:
+            type: string
+          description: Associated token tickers
+        tweet_url:
+          type: string
+          nullable: true
+          description: Link to the source tweet
+        narrative_id:
+          type: string
+          nullable: true
+          description: ID of the parent narrative thread
+    TokenSummaryResponse:
+      type: object
+      required:
+      - summary
+      properties:
+        summary:
+          type: string
+          description: AI-generated 24-hour summary for the token
+    Article:
+      type: object
+      required:
+      - id
+      - data
+      - created_at
+      properties:
+        id:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+          description: Article content and metadata
+        created_at:
+          type: string
+          format: date-time
+    Recap:
+      type: object
+      required:
+      - feed_category
+      - timeframe
+      - recap
+      - created_at
+      properties:
+        feed_category:
+          type: string
+          description: Category code
+        timeframe:
+          type: string
+          description: Recap timeframe (e.g. 12h, 24h)
+        recap:
+          type: string
+          description: AI-generated recap text
+        created_at:
+          type: string
+          format: date-time
+    Narrative:
+      type: object
+      required:
+      - narrative_id
+      - updated_at
+      - content
+      properties:
+        narrative_id:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        tag:
+          type: string
+          nullable: true
+          description: Narrative tag / classification
+        summary:
+          type: string
+          nullable: true
+          description: Narrative summary
+        content:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: Associated news items
+    FeedCategory:
+      type: object
+      required:
+      - code
+      - name
+      properties:
+        code:
+          type: string
+          description: Unique category code (lowercase, underscores)
+        name:
+          type: string
+          description: Display name
+        recap_timeframe:
+          type: string
+          nullable: true
+          description: Default recap timeframe (e.g. 12h) or null if recaps are disabled
+    TokenRequest:
+      type: object
+      required:
+      - name
+      - allowed_feed_categories
+      properties:
+        name:
+          type: string
+          description: Label for the token
+        allowed_feed_categories:
+          type: array
+          items:
+            type: string
+          description: Feed categories this token can access
+    ApiToken:
+      type: object
+      required:
+      - name
+      - allowed_feed_categories
+      - token
+      - issued_at
+      - expires_at
+      properties:
+        name:
+          type: string
+        allowed_feed_categories:
+          type: array
+          items:
+            type: string
+        token:
+          type: string
+          description: JWT token string
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+    RegisterBotRequest:
+      type: object
+      required:
+      - label
+      - platform
+      - platform_user_id
+      - platform_channel_id
+      properties:
+        label:
+          type: string
+          description: Bot label / name
+        platform:
+          type: string
+          description: Platform name (e.g. telegram, discord)
+        platform_user_id:
+          type: string
+          description: User ID on the platform
+        platform_channel_id:
+          type: string
+          description: Channel ID on the platform
+    SocialPlatformBot:
+      type: object
+      required:
+      - id
+      - label
+      - platform
+      - platform_user_id
+      - platform_channel_id
+      - created_at
+      - wallet_address
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        platform:
+          type: string
+        platform_user_id:
+          type: string
+        platform_channel_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        wallet_address:
+          type: string
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

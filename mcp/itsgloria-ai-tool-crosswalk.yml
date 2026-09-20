@@ -1,0 +1,83 @@
+generated: '2026-09-19'
+method: derived
+source: >-
+  Derived by binding the live MCP tools/list (mcp/itsgloria-ai-tools-list.json, probed anonymously
+  2026-09-19) to the operationIds in openapi/itsgloria-ai-openapi.yml (20 operations), using the
+  open-source server implementation at github.com/cryptobriefing-labs/gloria-mcp
+  (src/gloria_mcp/server.py) as the authority for which REST call each tool makes.
+purpose: >-
+  Make each MCP tool a first-class discovery unit bound to its backing REST operation, so the tool's
+  real input contract is the operation's parameters in the OpenAPI. Gloria's MCP surface is a strict
+  subset of the REST surface for reads (5 of 20 operations), and the two paid tools are projections
+  of the x402 surface on api.itsgloria.ai rather than of the authenticated REST base.
+surfaces:
+  rest_openapi: openapi/itsgloria-ai-openapi.yml            # 20 operations, base https://ai-hub.cryptobriefing.com
+  x402: https://api.itsgloria.ai                            # 4 paid resources, see x402/itsgloria-ai-x402.yml
+  mcp: https://mcp.itsgloria.ai/mcp                         # tools/list NOT gated - 7 tools with inputSchema, saved verbatim
+  websocket: wss://ai-hub.cryptobriefing.com/ws/feed        # see asyncapi/itsgloria-ai-websocket-feed.yml; no MCP projection
+crosswalk:
+- tool: get_latest_news
+  category: news
+  rest: [getNews]
+  binding: rest
+  confidence: high
+  note: server.py calls GET /news with feed_categories=category and limit (clamped 1-10); the REST op also takes from_date, to_date, keyword and page, which the tool does not expose.
+- tool: search_news
+  category: news
+  rest: [getNews]
+  binding: rest
+  confidence: high
+  note: GET /news with keyword=query and limit (clamped 1-5); the x402 surface exposes the same search as /news-by-keyword.
+- tool: get_news_recap
+  category: recaps
+  rest: [getRecaps]
+  binding: rest
+  confidence: high
+  note: GET /recaps?feed_category=&timeframe=; the tool docstring offers '1h'/'8h' timeframes while the REST docs list only 12h and 24h.
+- tool: get_categories
+  category: categories
+  rest: [getAvailableFeedCategories]
+  binding: rest
+  confidence: high
+- tool: get_news_item
+  category: news
+  rest: [getNewsById]
+  binding: rest
+  confidence: high
+- tool: get_enriched_news
+  category: news
+  rest: [getNews]
+  binding: x402
+  confidence: medium
+  note: does not call the REST base; returns payment instructions for GET https://api.itsgloria.ai/news ($0.03, USDC on Base). The paid response carries the same NewsItem shape including long_context.
+- tool: get_ticker_summary
+  category: recaps
+  rest: [getTickerSummary]
+  binding: x402
+  confidence: medium
+  note: does not call the REST base; returns payment instructions for GET https://api.itsgloria.ai/news-ticker-summary ($0.031).
+mcp_only: []
+rest_only:
+- capability: authentication
+  operations: [getNonce, verifySignature, getPublicToken]
+  reason: the hosted server is anonymous; the stdio package takes a pre-issued GLORIA_API_TOKEN
+- capability: articles
+  operations: [getArticles, getArticleById]
+- capability: narratives
+  operations: [getNarratives, getNarrativeById]
+- capability: api-token management
+  operations: [createApiToken, listApiTokens, revokeApiToken]
+- capability: social-platform bots
+  operations: [registerBot, listBots, deleteBot]
+- capability: streaming
+  operations: [websocketFeed]
+- capability: health
+  operations: [healthCheck]
+coverage:
+  tools_named: 7
+  tools_bound: 7
+  tools_bound_rest: 5
+  tools_bound_x402: 2
+  mcp_only: 0
+  rest_operations_total: 20
+  rest_operations_with_tool: 5

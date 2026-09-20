@@ -1,23 +1,208 @@
 aid: itsgloria-ai
 name: Gloria
-description: 'Gloria is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Gloria (Gloria AI Ltd., a Crypto Briefing product) is an AI-powered crypto and prediction-market
+  news intelligence platform: a real-time feed of curated headlines scraped from crypto Twitter and
+  newswires, filtered by a multi-stage LLM pipeline and enriched with sentiment, entity extraction,
+  narratives, category recaps and long-form articles. The same data core is exposed four ways - a
+  20-operation REST API (OpenAPI 3.0.3 at itsgloria.ai/openapi.json, base https://ai-hub.cryptobriefing.com)
+  authenticated by SIWE wallet signature or long-lived API tokens, a WebSocket push feed, a hosted
+  MCP server at mcp.itsgloria.ai with seven tools that answers an anonymous tools/list, and an x402
+  pay-per-request API at api.itsgloria.ai settled in USDC on Base - plus Telegram and Discord bots.
 url: https://raw.githubusercontent.com/api-evangelist/itsgloria-ai/refs/heads/main/apis.yml
+image: https://docs.itsgloria.ai/img/gloria-logo.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest stub)
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
 - Company
-apis: []
+- News
+- Crypto
+- Cryptocurrency
+- Market Intelligence
+- Sentiment Analysis
+- Prediction Markets
+- AI
+- MCP
+- x402
+- WebSocket
+- Agents
+apis:
+- name: Gloria Data Platform REST API
+  aid: itsgloria-ai:gloria-data-platform-rest-api
+  description: >-
+    REST API for curated crypto news with sentiment analysis, per-category AI recaps, narrative
+    story arcs, long-form articles and feed categories, plus API-token and social-bot management.
+    Authentication is a JWT obtained by SIWE (EIP-4361) wallet signature, a long-lived API token
+    generated at itsgloria.ai/api-keys-new, or an anonymous public token; the token is passed as a
+    Bearer header or a ?token= query parameter. 20 operations across 16 paths, published as
+    OpenAPI 3.0.3 at https://www.itsgloria.ai/openapi.json. The base URL the docs publish is
+    https://ai-hub.cryptobriefing.com (the spec's own servers[] host, ai.gloriaterminal.com, does
+    not resolve; every documented path was verified live on the ai-hub host).
+  humanURL: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+  baseURL: https://ai-hub.cryptobriefing.com
+  tags:
+  - News
+  - Crypto
+  - Sentiment Analysis
+  - Market Intelligence
+  - Narratives
+  - Recaps
+  - SIWE
+  properties:
+  - type: OpenAPI
+    url: openapi/itsgloria-ai-openapi.yml
+  - type: OpenAPI
+    name: Provider-hosted OpenAPI (verbatim source)
+    url: https://www.itsgloria.ai/openapi.json
+  - type: Documentation
+    url: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+  - type: APIReference
+    url: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+  - type: Authentication
+    url: authentication/itsgloria-ai-authentication.yml
+  - type: Conventions
+    url: conventions/itsgloria-ai-conventions.yml
+  - type: ErrorCatalog
+    url: errors/itsgloria-ai-problem-types.yml
+  - type: DataModel
+    url: data-model/itsgloria-ai-data-model.yml
+  - type: Overlay
+    url: overlays/itsgloria-ai-openapi-overlay.yaml
+  - type: Channels
+    url: asyncapi/itsgloria-ai-websocket-feed.yml
+  - type: PluginManifest
+    url: well-known/itsgloria-ai-ai-plugin.json
+- name: Gloria x402 API
+  aid: itsgloria-ai:gloria-x402-api
+  description: >-
+    Pay-per-request access to Gloria news over the x402 protocol with no account or API key: GET
+    /news ($0.03), /news-ticker-summary ($0.031), /news-by-keyword ($0.05) and /recaps ($0.10),
+    each answering an HTTP 402 x402Version 1 challenge (scheme exact, USDC on Base, 60 s timeout)
+    whose body carries a machine-readable input/output description of the paid resource. All four
+    documented resources were probed live on 2026-09-19 and returned genuine challenges; no
+    payment was made.
+  humanURL: https://docs.itsgloria.ai/gloria-data-platform/x402-integration/
+  baseURL: https://api.itsgloria.ai
+  tags:
+  - x402
+  - Micropayments
+  - News
+  - Crypto
+  - Agents
+  properties:
+  - type: Documentation
+    url: https://docs.itsgloria.ai/gloria-data-platform/x402-integration/
+  - type: X-X402
+    url: x402/itsgloria-ai-x402.yml
+- name: Gloria MCP Server
+  aid: itsgloria-ai:gloria-mcp-server
+  description: >-
+    Hosted, remote MCP server (Streamable HTTP at https://mcp.itsgloria.ai/mcp, serverInfo "Gloria
+    AI" 1.26.0, protocol 2025-06-18) exposing seven tools - five free (get_latest_news,
+    get_news_recap, search_news, get_categories, get_news_item) and two that return x402 payment
+    instructions (get_enriched_news, get_ticker_summary) - plus two resources (gloria://about,
+    gloria://categories). initialize and tools/list answer anonymously. The same server ships as
+    the open-source gloria-mcp package on PyPI for local stdio use against the REST API with a
+    GLORIA_API_TOKEN.
+  humanURL: https://www.itsgloria.ai/mcp
+  baseURL: https://mcp.itsgloria.ai/mcp
+  tags:
+  - MCP
+  - Agents
+  - News
+  - Crypto
+  - x402
+  properties:
+  - type: MCPServer
+    url: mcp/itsgloria-ai-mcp.yml
+  - type: MCPServer
+    name: Live remote endpoint (Streamable HTTP)
+    url: https://mcp.itsgloria.ai/mcp
+  - type: MCPTools
+    url: mcp/itsgloria-ai-tools-list.json
+  - type: ToolCrosswalk
+    url: mcp/itsgloria-ai-tool-crosswalk.yml
+  - type: Documentation
+    url: https://www.itsgloria.ai/mcp
+  - type: SourceCode
+    url: https://github.com/cryptobriefing-labs/gloria-mcp
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/itsgloria-ai-domain-security.yml
 - type: Website
   url: https://itsgloria.ai/
+- type: DeveloperPortal
+  url: https://www.itsgloria.ai/api-keys-new
+- type: Documentation
+  url: https://docs.itsgloria.ai/
+- type: APIReference
+  url: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+- type: GettingStarted
+  url: https://docs.itsgloria.ai/gloria-data-platform/overview/
+- type: Pricing
+  url: https://www.itsgloria.ai/pricing
+- type: TermsOfService
+  url: https://www.itsgloria.ai/terms-of-use
+- type: PrivacyPolicy
+  url: https://www.itsgloria.ai/privacy-policy
+- type: Support
+  url: https://discord.gg/UFa4HK2Vjv
+- type: Contact
+  url: https://www.itsgloria.ai/contact
+- type: Roadmap
+  url: https://docs.itsgloria.ai/roadmap/
+- type: GitHubOrganization
+  url: https://github.com/cryptobriefing-labs
+- type: Twitter
+  url: https://x.com/itsgloria_ai
+- type: Telegram
+  url: https://t.me/itsgloria_ai
+- type: Discord
+  url: https://discord.gg/UFa4HK2Vjv
+- type: Packages
+  url: packages/itsgloria-ai-packages.yml
+- type: WellKnown
+  url: well-known/itsgloria-ai-well-known.yml
+- type: PluginManifest
+  url: well-known/itsgloria-ai-ai-plugin.json
+- type: LLMsTxt
+  url: llms/itsgloria-ai-llms.txt
+- type: Conformance
+  url: conformance/itsgloria-ai-conformance.yml
+- type: Lifecycle
+  url: lifecycle/itsgloria-ai-lifecycle.yml
+- type: Authentication
+  url: authentication/itsgloria-ai-authentication.yml
+- type: Conventions
+  url: conventions/itsgloria-ai-conventions.yml
+- type: ErrorCatalog
+  url: errors/itsgloria-ai-problem-types.yml
+- type: DataModel
+  url: data-model/itsgloria-ai-data-model.yml
+- type: Plans
+  url: plans/itsgloria-ai-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/itsgloria-ai-rate-limits.yml
+- type: RegulatoryPosture
+  url: regulatory/itsgloria-ai-regulatory-posture.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: AgenticAccess
+  url: agentic-access/itsgloria-ai-agentic-access.yml
+- type: X-X402
+  url: x402/itsgloria-ai-x402.yml
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 33
+  pass: local-v3

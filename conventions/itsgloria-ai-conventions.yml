@@ -1,0 +1,92 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  https://docs.itsgloria.ai/gloria-data-platform/api-integration/ (authentication, parameters,
+  response formats, WebSocket lifecycle), /x402-integration/, openapi/itsgloria-ai-openapi.yml and
+  live unauthenticated responses from ai-hub.cryptobriefing.com and api.itsgloria.ai, 2026-09-19.
+description: >-
+  Cross-cutting request/response semantics of the Gloria Data Platform REST API - a small, read-heavy
+  FastAPI surface with wallet/JWT auth, page+limit pagination, bare-array responses and no
+  idempotency, versioning or rate-limit signalling.
+base_url: https://ai-hub.cryptobriefing.com
+api_style: REST over HTTPS, JSON responses; query-parameter requests for reads, JSON bodies for the few writes
+authentication:
+  scheme: JWT bearer (Authorization header) or the same JWT as a ?token= query parameter
+  issuance:
+  - SIWE - GET /auth/nonce, sign an EIP-4361 message with an Ethereum wallet, POST /auth/verify -> access_token
+  - API token - POST /user/api-tokens (authenticated) or the itsgloria.ai/api-keys-new page; scoped to feed categories at creation
+  - Public token - GET /auth/public-token, anonymous, read-only, empty allowed_feed_categories
+  feed_permissions: each token carries allowed_feed_categories; requesting another category returns 403
+  x402_surface: api.itsgloria.ai takes no token - each request is paid with an X-PAYMENT header (USDC on Base)
+  docs: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+  detail: authentication/itsgloria-ai-authentication.yml
+idempotency:
+  supported: false
+  coverage: none
+  mechanism: null
+  applies_to: []
+  notes: >-
+    Four mutating operations exist - createApiToken (POST), revokeApiToken (DELETE), registerBot
+    (PUT), deleteBot (DELETE) - and none documents an idempotency key or replay protection. The PUT
+    and DELETE operations are idempotent by HTTP semantics only; POST /user/api-tokens mints a new
+    token on every call.
+pagination:
+  style: page-number
+  request_params:
+    page: page number, default 1
+    limit: items per page, default 20 (articles 1-100)
+  response_fields: bare JSON array of items; no total, has_more or next cursor
+  applies_to: [getNews, getArticles]
+  docs: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+filtering:
+  getNews: [feed_categories (comma-separated codes), from_date, to_date (YYYY-MM-DD), keyword]
+  getArticles: [category, search, type]
+  getRecaps: [feed_category, timeframe (12h | 24h)]
+  getTickerSummary: [ticker]
+field_expansion:
+  supported: false
+metadata:
+  supported: false
+request_tracing:
+  request_id_header: null
+  notes: no request-id header documented or observed (responses carry only Cloudflare cf-ray).
+versioning:
+  scheme: none
+  detail: lifecycle/itsgloria-ai-lifecycle.yml
+error_envelope:
+  media_type: application/json
+  shape: '{ "detail": string }'
+  x402: '{ "x402Version": 1, "error": string, "accepts": [...] }'
+  detail: errors/itsgloria-ai-problem-types.yml
+rate_limiting:
+  documented_limits: Elite plan 50,000 requests/month; nothing per-second
+  headers: none documented or observed
+  detail: rate-limits/itsgloria-ai-rate-limits.yml
+dry_run_mode:
+  supported: false
+  notes: no sandbox or dry-run flag; the anonymous public token is a live read-only key, not a test mode.
+reversibility:
+  grade: documented
+  notes: >-
+    The API is read-only except for API-token and bot registration management. Both write pairs have
+    a reversal operation, and the docs state no window, so the grade is documented (reversal path
+    exists) rather than verified (path + window).
+  surfaces:
+  - write: createApiToken (POST /user/api-tokens)
+    reversal: revokeApiToken (DELETE /user/api-tokens)
+    window: not stated
+    docs: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+  - write: registerBot (PUT /user/social-platform-bots)
+    reversal: deleteBot (DELETE /user/social-platform-bots)
+    window: not stated
+    docs: https://docs.itsgloria.ai/gloria-data-platform/bots/
+  - write: x402 paid requests (api.itsgloria.ai)
+    reversal: none - a settled USDC micropayment is not refundable through the API
+    window: n/a
+  read_only_surface: [getNews, getNewsById, getTickerSummary, getArticles, getArticleById, getRecaps, getNarratives, getNarrativeById, getAvailableFeedCategories, listApiTokens, listBots, healthCheck, websocketFeed]
+streaming:
+  websocket: wss://ai-hub.cryptobriefing.com/ws/feed?token=<jwt>
+  keepalive: server pings every 30 s; client must answer pong; idle connections close after 5 minutes
+  detail: asyncapi/itsgloria-ai-websocket-feed.yml
+caching:
+  observed: 'cache-control: public, s-maxage=30, stale-while-revalidate=60 on GET /news (Cloudflare in front of an AWS ALB)'

@@ -1,0 +1,59 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the Gloria Terminal API
+  version: 1.0.0
+  x-generated: '2026-09-19'
+  x-method: generated
+  x-source: >-
+    Our enhancements to openapi/itsgloria-ai-openapi.yml (verbatim copy at openapi/_original/), grounded in
+    https://docs.itsgloria.ai/gloria-data-platform/api-integration/ and live probes on 2026-09-19. The
+    original spec is never mutated; apply this overlay to obtain the annotated view.
+extends: ../openapi/itsgloria-ai-openapi.yml
+actions:
+- target: $.servers
+  description: >-
+    The published servers[] host ai.gloriaterminal.com does not resolve (DNS NXDOMAIN, probed 2026-09-19).
+    The docs state Base URL https://ai-hub.cryptobriefing.com, where every documented path answered
+    (401 Missing token on gated reads, 200 on /auth/nonce, /auth/public-token, /available-feed-categories,
+    and 200 on /news with the public token). Add it as the first server without removing the original.
+  update:
+  - url: https://ai-hub.cryptobriefing.com
+    description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19)
+- target: $.info
+  description: Point readers at the profile, the x402 surface and the MCP server that project this API.
+  update:
+    x-apis-io:
+      profile: https://apis.io/providers/itsgloria-ai/
+      repository: https://github.com/api-evangelist/itsgloria-ai
+      documented_base_url: https://ai-hub.cryptobriefing.com
+      x402_surface: https://api.itsgloria.ai (GET /news, /news-ticker-summary, /news-by-keyword, /recaps; see x402/itsgloria-ai-x402.yml)
+      mcp_server: https://mcp.itsgloria.ai/mcp (7 tools; see mcp/itsgloria-ai-mcp.yml)
+      websocket: wss://ai-hub.cryptobriefing.com/ws/feed (see asyncapi/itsgloria-ai-websocket-feed.yml)
+- target: $.paths['/ws/feed'].get
+  description: The docs use lower-case message types (subscribe, unsubscribe, ping, pong, data, error, connected) and the ai-hub host; annotate without changing the provider's text.
+  update:
+    x-documented-url: wss://ai-hub.cryptobriefing.com/ws/feed?token=<jwt>
+    x-message-types: [connected, subscribe, subscribed, unsubscribe, unsubscribed, data, error, ping, pong]
+    x-idle-timeout: 5 minutes
+    x-close-codes: {'1000': normal closure, '1008': policy violation (missing or invalid token)}
+- target: $.paths['/news'].get
+  description: Record the x402 pay-per-request equivalent of this read.
+  update:
+    x-x402-resource: https://api.itsgloria.ai/news
+    x-x402-price-usd: '0.03'
+- target: $.paths['/recaps'].get
+  update:
+    x-x402-resource: https://api.itsgloria.ai/recaps
+    x-x402-price-usd: '0.10'
+- target: $.paths['/news-ticker-summary'].get
+  update:
+    x-x402-resource: https://api.itsgloria.ai/news-ticker-summary
+    x-x402-price-usd: '0.031'
+- target: $.paths['/user/api-tokens'].post
+  description: Flag the one non-idempotent write (conventions/ idempotency.coverage none).
+  update:
+    x-idempotent: false
+    x-reversal-operation: revokeApiToken
+- target: $.paths['/user/social-platform-bots'].put
+  update:
+    x-reversal-operation: deleteBot

@@ -1,0 +1,50 @@
+generated: '2026-09-19'
+method: searched
+format: fastapi-detail
+source: >-
+  Derived from the 4xx/5xx responses in openapi/itsgloria-ai-openapi.yml (components.responses
+  Unauthorized / NotFound / InternalError, all ErrorResponse {detail}) and enriched from the Status
+  Codes tables at https://docs.itsgloria.ai/gloria-data-platform/api-integration/ and
+  /x402-integration/, plus live unauthenticated responses observed 2026-09-19.
+envelope:
+  media_type: application/json
+  shape: '{ "detail": string }'
+  observed: '{"detail":"Missing token"} (401 on ai-hub.cryptobriefing.com); {"detail":"Not Found"} (404)'
+  x402_envelope: '{ "x402Version": 1, "error": string, "accepts": [ ... ] } on api.itsgloria.ai (402)'
+  x402_api_key_envelope: '{ "error": "Unauthorized", "message": "Missing x-api-key header" } (401 on api.itsgloria.ai/articles)'
+problems:
+- status: 400
+  title: Bad Request
+  meaning: Invalid parameters; on DELETE /user/api-tokens also "Token not found or does not belong to us".
+  source_operations: [revokeApiToken]
+  remediation: Check parameter names/formats (dates are YYYY-MM-DD; category codes from getAvailableFeedCategories).
+- status: 401
+  title: Unauthorized
+  meaning: Missing or invalid token (JWT expired, malformed, or absent from both the Authorization header and the ?token= query parameter).
+  source_operations: [verifySignature, getNews, getNewsById, getTickerSummary, getArticles, getArticleById, getRecaps, getNarratives, getNarrativeById, createApiToken, listApiTokens, revokeApiToken, websocketFeed, registerBot, listBots, deleteBot]
+  remediation: Obtain a token via getPublicToken (anonymous, limited), the SIWE flow (getNonce -> verifySignature) or an API token (createApiToken), and resend.
+- status: 402
+  title: Payment Required
+  meaning: x402 surface only (api.itsgloria.ai) - the request carried no valid X-PAYMENT header; the body is the payment challenge.
+  remediation: Settle the accepts[0] quote (USDC on Base, exact scheme, within maxTimeoutSeconds 60) and retry with X-PAYMENT; see x402/itsgloria-ai-x402.yml.
+- status: 403
+  title: Forbidden
+  meaning: The token does not have permission for the requested feed category (tokens are scoped to feed categories at creation).
+  remediation: Request only categories in the token's allowed_feed_categories, or create a token with the needed categories.
+- status: 404
+  title: Not Found
+  meaning: No data for the given parameters, or the news item / article / narrative / recap / bot does not exist.
+  source_operations: [getNewsById, getArticleById, getRecaps, getNarratives, getNarrativeById, listBots]
+- status: 500
+  title: Internal Server Error
+  meaning: Server-side failure; documented on getTickerSummary and deleteBot.
+  source_operations: [getTickerSummary, deleteBot]
+  remediation: Retry after a delay; the ticker summary calls out to web search and can fail transiently.
+websocket_close_codes:
+- code: 1000
+  meaning: Normal closure (server shutting down or the connection was inactive for 5 minutes).
+- code: 1008
+  meaning: Policy violation - missing or invalid token.
+websocket_error_message:
+  shape: '{ "type": "error", "error": string, "details": string }'
+  example: '{"type":"error","error":"Permission denied","details":"No permission for crypto feed"}'

@@ -1,0 +1,60 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  openapi/itsgloria-ai-openapi.yml (securitySchemes, info.description, ErrorResponse, parameters),
+  https://docs.itsgloria.ai/gloria-data-platform/api-integration/ and /x402-integration/, the live
+  MCP initialize result from https://mcp.itsgloria.ai/mcp, the live 402 bodies from api.itsgloria.ai
+  and https://www.itsgloria.ai/.well-known/ai-plugin.json, all fetched 2026-09-19.
+standards:
+- id: siwe-eip-4361
+  conforms: true
+  evidence: >-
+    Sign-In with Ethereum: GET /auth/nonce then POST /auth/verify with a signed EIP-4361 message
+    returns a JWT (openapi info.description; docs "Wallet Authentication"). Domain-relevant identity
+    standard for a wallet-gated crypto data product.
+- id: jwt-bearer-rfc6750
+  conforms: true
+  evidence: 'securitySchemes.BearerAuth (http bearer, bearerFormat JWT) applied globally; docs show "Authorization: Bearer <token>".'
+- id: x402
+  conforms: true
+  evidence: >-
+    GET /news, /recaps, /news-ticker-summary and /news-by-keyword on api.itsgloria.ai answer HTTP 402
+    with an x402Version 1 body (scheme exact, network base, USDC asset, payTo, outputSchema) -
+    saved in x402/. Docs: "Payment Integration - X402 Protocol". The one machine-payment standard
+    in this market, and the spec declares it in the response body rather than prose.
+- id: mcp-2025-06-18
+  conforms: true
+  evidence: initialize on https://mcp.itsgloria.ai/mcp returned protocolVersion 2025-06-18 with tools/resources/prompts capabilities; tools/list answered with inputSchema per tool.
+- id: openai-plugin-manifest-v1
+  conforms: true
+  evidence: https://www.itsgloria.ai/.well-known/ai-plugin.json schema_version v1, api.type openapi -> https://itsgloria.ai/openapi.json (well-known/itsgloria-ai-ai-plugin.json).
+- id: websocket-rfc6455
+  conforms: true
+  evidence: wss://ai-hub.cryptobriefing.com/ws/feed?token= with JSON subscribe/unsubscribe/ping/pong messages and close codes 1000/1008 (docs "News WebSocket API"; openapi websocketFeed).
+- id: pagination
+  conforms: true
+  evidence: page (default 1) + limit (default 20; articles 1-100) query parameters on getNews and getArticles; responses are bare JSON arrays with no has_more/next cursor.
+- id: oauth2
+  conforms: false
+  evidence: no oauth2 securityScheme; no /.well-known/oauth-authorization-server on any host (well-known/).
+- id: oidc
+  conforms: false
+  evidence: no /.well-known/openid-configuration on any host.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: 'errors are {"detail": "<message>"} (components.schemas.ErrorResponse; live 401 {"detail":"Missing token"}); no application/problem+json.'
+- id: idempotency
+  conforms: false
+  evidence: no Idempotency-Key header or equivalent on the four write operations (createApiToken, revokeApiToken, registerBot, deleteBot).
+- id: rfc8594-sunset-deprecation
+  conforms: false
+  evidence: no deprecation policy, Sunset or Deprecation headers documented; no deprecated:true operations in the spec.
+domain_standard:
+  market: crypto / financial news intelligence
+  declared: x402 (machine payment) and SIWE / EIP-4361 (wallet identity)
+  note: >-
+    No sector data-format standard (there is no equivalent of FHIR/SCIM/OpenRTB for news feeds); the
+    contract's own domain declarations are the x402 402 envelope and the EIP-4361 auth flow above.
+compliance_program:
+  published: false
+  note: no trust center, certifications (SOC 2 / ISO 27001) or compliance page found on itsgloria.ai or docs.itsgloria.ai; probe-security-programs.py found no VDP and no trust center. No Compliance pointer is emitted.

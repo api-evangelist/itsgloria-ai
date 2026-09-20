@@ -1,0 +1,36 @@
+generated: '2026-09-19'
+method: searched
+source: https://www.itsgloria.ai/pricing
+sources:
+- https://www.itsgloria.ai/pricing
+- https://docs.itsgloria.ai/gloria-data-platform/api-integration/
+- https://www.itsgloria.ai/privacy-policy
+provider: Gloria
+providerId: itsgloria-ai
+limit_count: 1
+description: >-
+  Gloria publishes one quantitative limit - the Elite plan's 50,000 API requests per month - and no
+  per-second or per-minute rate limit, no burst figure and no rate-limit response headers. The API
+  reference documents 400/401/403/404/500 (and 402 on the x402 surface) but no 429. Live responses
+  from ai-hub.cryptobriefing.com and api.itsgloria.ai on 2026-09-19 carried no RateLimit-*,
+  X-RateLimit-* or Retry-After headers (only Cloudflare cf-* headers). The privacy policy says the
+  API/WebSocket channels log "endpoint usage, rate limits" for abuse detection, confirming limits are
+  enforced but not what they are. The MCP server clamps tool page sizes (limit 1-10 on
+  get_latest_news, 1-5 on search_news) and the WebSocket closes after 5 minutes of inactivity.
+headers: {}
+responseCodes:
+  throttled: not documented
+limits:
+- name: Elite plan monthly API quota
+  scope: account
+  metric: requests
+  limit: 50000
+  window: month
+  timeFrame: month
+  plan: Elite ($19/month)
+  source: https://www.itsgloria.ai/pricing
+  note: Enterprise quota is "custom"; Free and Plus have no API access.
+observed:
+  probed: '2026-09-19'
+  hosts: [ai-hub.cryptobriefing.com, api.itsgloria.ai]
+  rate_limit_headers_observed: []
