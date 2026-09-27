@@ -1,0 +1,111 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai Recaps API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged Recaps across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: Recaps
+  description: Periodic summaries per feed category
+paths:
+  /recaps:
+    get:
+      operationId: getRecaps
+      tags:
+      - Recaps
+      summary: Get a category recap
+      description: Returns an AI-generated summary of recent news for a feed category and timeframe.
+      parameters:
+      - name: feed_category
+        in: query
+        required: true
+        description: Feed category code (e.g. `crypto`, `macro`, `defi`)
+        schema:
+          type: string
+      - name: timeframe
+        in: query
+        required: true
+        description: Recap timeframe (e.g. `12h`, `24h`, `8h`)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Category recap
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Recap'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+    Recap:
+      type: object
+      required:
+      - feed_category
+      - timeframe
+      - recap
+      - created_at
+      properties:
+        feed_category:
+          type: string
+          description: Category code
+        timeframe:
+          type: string
+          description: Recap timeframe (e.g. 12h, 24h)
+        recap:
+          type: string
+          description: AI-generated recap text
+        created_at:
+          type: string
+          format: date-time
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml

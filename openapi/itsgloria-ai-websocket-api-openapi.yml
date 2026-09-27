@@ -1,0 +1,116 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai WebSocket API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged WebSocket across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: Websocket
+  description: Real-time news feed via WebSocket
+paths:
+  /ws/feed:
+    get:
+      operationId: websocketFeed
+      tags:
+      - Websocket
+      summary: Real-time news WebSocket feed
+      description: 'WebSocket endpoint for receiving real-time news updates.
+
+
+        **Connection:** `wss://ai.gloriaterminal.com/ws/feed?token=`
+
+
+        **Subscribe to a category:**
+
+        ```json
+
+        { "type": "SUBSCRIBE", "feed_category": "crypto" }
+
+        ```
+
+
+        **Unsubscribe:**
+
+        ```json
+
+        { "type": "UNSUBSCRIBE", "feed_category": "crypto" }
+
+        ```
+
+
+        **Keep-alive (ping/pong):**
+
+        ```json
+
+        { "type": "PING" }
+
+        ```
+
+
+        **Server messages:**
+
+        - `CONNECTED` — connection established
+
+        - `SUBSCRIBED` / `UNSUBSCRIBED` — subscription confirmation
+
+        - `PONG` — keep-alive response with timestamp
+
+        - `ERROR` — error message
+
+        - News items are broadcast as `NewsItem` objects to subscribed categories.'
+      parameters:
+      - name: token
+        in: query
+        required: true
+        description: JWT access token
+        schema:
+          type: string
+      responses:
+        '101':
+          description: Switching Protocols — WebSocket connection established
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml

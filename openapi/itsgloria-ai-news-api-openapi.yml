@@ -1,0 +1,248 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai News API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged News across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: News
+  description: Real-time crypto news feed with sentiment analysis
+paths:
+  /news:
+    get:
+      operationId: getNews
+      tags:
+      - News
+      summary: List news items
+      description: Returns a paginated list of news items with optional filtering by category, date range, and keyword.
+      parameters:
+      - name: feed_categories
+        in: query
+        description: Comma-separated feed category codes (e.g. `crypto,macro`). Omit for all categories.
+        schema:
+          type: string
+      - name: from_date
+        in: query
+        description: Start date filter (YYYY-MM-DD)
+        schema:
+          type: string
+          format: date
+      - name: to_date
+        in: query
+        description: End date filter (YYYY-MM-DD)
+        schema:
+          type: string
+          format: date
+      - name: keyword
+        in: query
+        description: Filter by keyword in headlines
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Items per page
+        schema:
+          type: integer
+          default: 20
+      - name: page
+        in: query
+        description: Page number (1-indexed)
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+      responses:
+        '200':
+          description: Paginated news list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NewsItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+  /news/{id}:
+    get:
+      operationId: getNewsById
+      tags:
+      - News
+      summary: Get a single news item
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: News item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewsItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+  /news-ticker-summary:
+    get:
+      operationId: getTickerSummary
+      tags:
+      - News
+      summary: Get 24-hour summary for a token
+      description: Generates an AI summary of the last 24 hours of news for a specific token or ticker.
+      parameters:
+      - name: ticker
+        in: query
+        required: true
+        description: Token symbol or name (e.g. `ZRO`, `LayerZero`)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Token summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenSummaryResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    NewsItem:
+      type: object
+      required:
+      - id
+      - signal
+      - sentiment
+      - sentiment_value
+      - feed_categories
+      - short_context
+      - long_context
+      - sources
+      - author
+      - tokens
+      properties:
+        id:
+          type: string
+        signal:
+          type: string
+          description: Headline / news signal
+        sentiment:
+          type: string
+          description: Sentiment label (e.g. bullish, bearish, neutral)
+        sentiment_value:
+          type: number
+          format: float
+          description: Sentiment score between 0 and 1
+        timestamp:
+          type:
+          - number
+          - 'null'
+          format: float
+          description: Unix timestamp of the news event
+        feed_categories:
+          type: array
+          items:
+            type: string
+          description: Category codes this item belongs to
+        short_context:
+          type: string
+          description: Brief summary
+        long_context:
+          type: string
+          description: Detailed summary
+        sources:
+          type: array
+          items:
+            type: string
+          description: Source URLs
+        author:
+          type: string
+          description: Original author / Twitter handle
+        tokens:
+          type: array
+          items:
+            type: string
+          description: Associated token tickers
+        tweet_url:
+          type:
+          - string
+          - 'null'
+          description: Link to the source tweet
+        narrative_id:
+          type:
+          - string
+          - 'null'
+          description: ID of the parent narrative thread
+    TokenSummaryResponse:
+      type: object
+      required:
+      - summary
+      properties:
+        summary:
+          type: string
+          description: AI-generated 24-hour summary for the token
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml

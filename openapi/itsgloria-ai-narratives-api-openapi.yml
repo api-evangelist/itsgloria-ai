@@ -1,0 +1,134 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai Narratives API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged Narratives across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: Narratives
+  description: Market narrative threads grouping related news
+paths:
+  /narratives:
+    get:
+      operationId: getNarratives
+      tags:
+      - Narratives
+      summary: List narratives
+      description: Returns all active market narrative threads.
+      responses:
+        '200':
+          description: Narrative list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Narrative'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+  /narratives/{id}:
+    get:
+      operationId: getNarrativeById
+      tags:
+      - Narratives
+      summary: Get a single narrative
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Narrative
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Narrative'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    Narrative:
+      type: object
+      required:
+      - narrative_id
+      - updated_at
+      - content
+      properties:
+        narrative_id:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        tag:
+          type:
+          - string
+          - 'null'
+          description: Narrative tag / classification
+        summary:
+          type:
+          - string
+          - 'null'
+          description: Narrative summary
+        content:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: Associated news items
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml

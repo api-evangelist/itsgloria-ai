@@ -1,0 +1,159 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai API Keys API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged API Keys across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: API Keys
+  description: Manage long-lived API tokens
+paths:
+  /user/api-tokens:
+    post:
+      operationId: createApiToken
+      tags:
+      - API Keys
+      summary: Create an API token
+      description: Generates a long-lived API token scoped to specific feed categories. Tokens expire after 5 years.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+      responses:
+        '201':
+          description: Token created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiToken'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: listApiTokens
+      tags:
+      - API Keys
+      summary: List API tokens
+      description: Returns all active (non-revoked) API tokens for the authenticated user.
+      responses:
+        '200':
+          description: Token list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApiToken'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      operationId: revokeApiToken
+      tags:
+      - API Keys
+      summary: Revoke an API token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - token
+              properties:
+                token:
+                  type: string
+                  description: The JWT token string to revoke
+      responses:
+        '204':
+          description: Token revoked
+        '400':
+          description: Token not found or does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    ApiToken:
+      type: object
+      required:
+      - name
+      - allowed_feed_categories
+      - token
+      - issued_at
+      - expires_at
+      properties:
+        name:
+          type: string
+        allowed_feed_categories:
+          type: array
+          items:
+            type: string
+        token:
+          type: string
+          description: JWT token string
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+    TokenRequest:
+      type: object
+      required:
+      - name
+      - allowed_feed_categories
+      properties:
+        name:
+          type: string
+          description: Label for the token
+        allowed_feed_categories:
+          type: array
+          items:
+            type: string
+          description: Feed categories this token can access
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml

@@ -1,0 +1,147 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai Authentication API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged Authentication across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: Authentication
+  description: Wallet-based authentication (SIWE) and token management
+paths:
+  /auth/nonce:
+    get:
+      operationId: getNonce
+      tags:
+      - Authentication
+      summary: Get authentication nonce
+      description: Returns a one-time nonce to include in the SIWE message before signing.
+      security: []
+      responses:
+        '200':
+          description: Nonce generated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - nonce
+                properties:
+                  nonce:
+                    type: string
+                    description: One-time nonce string
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+  /auth/verify:
+    post:
+      operationId: verifySignature
+      tags:
+      - Authentication
+      summary: Verify wallet signature
+      description: Verifies an EIP-4361 (SIWE) signed message and returns a JWT access token.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyRequest'
+      responses:
+        '200':
+          description: Signature verified, JWT issued
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - access_token
+                - is_admin
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token
+                  is_admin:
+                    type: boolean
+                    description: Whether the wallet has admin privileges
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+  /auth/public-token:
+    get:
+      operationId: getPublicToken
+      tags:
+      - Authentication
+      summary: Get a public access token
+      description: Returns a JWT token with anonymous access to public feed categories.
+      security: []
+      responses:
+        '200':
+          description: Public token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - access_token
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT access token with public-only permissions
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+    VerifyRequest:
+      type: object
+      required:
+      - message
+      - signature
+      properties:
+        message:
+          type: string
+          description: EIP-4361 (SIWE) formatted message containing the nonce
+        signature:
+          type: string
+          description: EIP-191 signature of the message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml

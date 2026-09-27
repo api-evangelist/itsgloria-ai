@@ -1,0 +1,73 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai Categories API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged Categories across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: Categories
+  description: Available feed categories
+paths:
+  /available-feed-categories:
+    get:
+      operationId: getAvailableFeedCategories
+      tags:
+      - Categories
+      summary: List available feed categories
+      description: Returns all feed categories available for filtering and subscription. No authentication required.
+      security: []
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeedCategory'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    FeedCategory:
+      type: object
+      required:
+      - code
+      - name
+      properties:
+        code:
+          type: string
+          description: Unique category code (lowercase, underscores)
+        name:
+          type: string
+          description: Display name
+        recap_timeframe:
+          type:
+          - string
+          - 'null'
+          description: Default recap timeframe (e.g. 12h) or null if recaps are disabled
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml

@@ -1,0 +1,150 @@
+openapi: 3.2.0
+info:
+  title: Itsgloria Ai Articles API
+  version: 1.0.0
+  contact:
+    name: Gloria Terminal
+    url: https://itsgloria.ai
+  description: 'Operations tagged Articles across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://ai.gloriaterminal.com
+  description: Production
+- url: https://ai-hub.cryptobriefing.com
+  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
+security:
+- BearerAuth: []
+- TokenQuery: []
+tags:
+- name: Articles
+  description: Long-form articles generated from news events
+paths:
+  /articles:
+    get:
+      operationId: getArticles
+      tags:
+      - Articles
+      summary: List articles
+      description: Returns a paginated list of articles with optional filtering.
+      parameters:
+      - name: limit
+        in: query
+        description: Items per page (max 100)
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
+      - name: page
+        in: query
+        description: Page number (1-indexed)
+        schema:
+          type: integer
+          default: 1
+          minimum: 1
+      - name: category
+        in: query
+        description: Filter by category
+        schema:
+          type: string
+      - name: search
+        in: query
+        description: Search in headline and content
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: Filter by article type
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Paginated article list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+  /articles/{article_id}:
+    get:
+      operationId: getArticleById
+      tags:
+      - Articles
+      summary: Get a single article
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Article
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    servers:
+    - url: https://ai.gloriaterminal.com
+      description: Production
+components:
+  schemas:
+    Article:
+      type: object
+      required:
+      - id
+      - data
+      - created_at
+      properties:
+        id:
+          type: string
+        data:
+          type: object
+          additionalProperties: true
+          description: Article content and metadata
+        created_at:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from `/auth/verify` or `/user/api-tokens`.
+    TokenQuery:
+      type: apiKey
+      in: query
+      name: token
+      description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
+x-refined-from:
+- itsgloria-ai-openapi.json
+- itsgloria-ai-openapi.yml
