@@ -1,8 +1,7 @@
 {
   "provider": "itsgloria-ai",
   "sources": [
-    "_original/itsgloria-ai-openapi.json",
-    "itsgloria-ai-openapi.yml"
+    "_original/itsgloria-ai-openapi.json"
   ],
   "outputs": [
     "itsgloria-ai-api-keys-api-openapi.yml",
@@ -16,26 +15,26 @@
     "itsgloria-ai-recaps-api-openapi.yml",
     "itsgloria-ai-websocket-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/itsgloria-ai-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "1 archived document(s) dropped as subsets of other archived documents",
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "itsgloria-ai-openapi.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "itsgloria-ai-openapi.yml: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
-    "tag 'API Keys' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'Articles' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'Authentication' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'Bots' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'Categories' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'Health' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'Narratives' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'News' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'Recaps' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "tag 'WebSocket' spans 2 source specs (itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml): per-path servers applied",
-    "apis.yml register: written (+10 apis, 12 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/itsgloria-ai-openapi.yml: archived document superseded by a larger archived document",
+    "itsgloria-ai-api-keys-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-articles-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-authentication-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-bots-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-categories-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-narratives-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-news-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-recaps-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "itsgloria-ai-websocket-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

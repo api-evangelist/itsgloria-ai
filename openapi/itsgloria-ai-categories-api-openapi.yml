@@ -1,16 +1,14 @@
 openapi: 3.2.0
 info:
-  title: Itsgloria Ai Categories API
+  title: Gloria Terminal Categories API
   version: 1.0.0
+  description: AI-powered crypto intelligence API providing real-time news with sentiment analysis, market narratives, category recaps, and articles.
   contact:
     name: Gloria Terminal
     url: https://itsgloria.ai
-  description: 'Operations tagged Categories across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://ai.gloriaterminal.com
   description: Production
-- url: https://ai-hub.cryptobriefing.com
-  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
 security:
 - BearerAuth: []
 - TokenQuery: []
@@ -35,9 +33,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/FeedCategory'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
 components:
   schemas:
     FeedCategory:
@@ -68,6 +63,3 @@ components:
       in: query
       name: token
       description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
-x-refined-from:
-- itsgloria-ai-openapi.json
-- itsgloria-ai-openapi.yml

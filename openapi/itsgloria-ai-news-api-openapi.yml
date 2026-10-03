@@ -1,16 +1,14 @@
 openapi: 3.2.0
 info:
-  title: Itsgloria Ai News API
+  title: Gloria Terminal News API
   version: 1.0.0
+  description: AI-powered crypto intelligence API providing real-time news with sentiment analysis, market narratives, category recaps, and articles.
   contact:
     name: Gloria Terminal
     url: https://itsgloria.ai
-  description: 'Operations tagged News across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://ai.gloriaterminal.com
   description: Production
-- url: https://ai-hub.cryptobriefing.com
-  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
 security:
 - BearerAuth: []
 - TokenQuery: []
@@ -72,9 +70,6 @@ paths:
                   $ref: '#/components/schemas/NewsItem'
         '401':
           $ref: '#/components/responses/Unauthorized'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
   /news/{id}:
     get:
       operationId: getNewsById
@@ -98,9 +93,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
   /news-ticker-summary:
     get:
       operationId: getTickerSummary
@@ -126,11 +118,35 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
 components:
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    TokenSummaryResponse:
+      type: object
+      required:
+      - summary
+      properties:
+        summary:
+          type: string
+          description: AI-generated 24-hour summary for the token
     NewsItem:
       type: object
       required:
@@ -197,14 +213,6 @@ components:
           - string
           - 'null'
           description: ID of the parent narrative thread
-    TokenSummaryResponse:
-      type: object
-      required:
-      - summary
-      properties:
-        summary:
-          type: string
-          description: AI-generated 24-hour summary for the token
     ErrorResponse:
       type: object
       required:
@@ -213,25 +221,6 @@ components:
         detail:
           type: string
           description: Error message
-  responses:
-    Unauthorized:
-      description: Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    InternalError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     BearerAuth:
       type: http
@@ -243,6 +232,3 @@ components:
       in: query
       name: token
       description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
-x-refined-from:
-- itsgloria-ai-openapi.json
-- itsgloria-ai-openapi.yml

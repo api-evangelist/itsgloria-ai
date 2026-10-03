@@ -1,16 +1,14 @@
 openapi: 3.2.0
 info:
-  title: Itsgloria Ai Authentication API
+  title: Gloria Terminal Authentication API
   version: 1.0.0
+  description: AI-powered crypto intelligence API providing real-time news with sentiment analysis, market narratives, category recaps, and articles.
   contact:
     name: Gloria Terminal
     url: https://itsgloria.ai
-  description: 'Operations tagged Authentication across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://ai.gloriaterminal.com
   description: Production
-- url: https://ai-hub.cryptobriefing.com
-  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
 security:
 - BearerAuth: []
 - TokenQuery: []
@@ -39,9 +37,6 @@ paths:
                   nonce:
                     type: string
                     description: One-time nonce string
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
   /auth/verify:
     post:
       operationId: verifySignature
@@ -75,9 +70,6 @@ paths:
                     description: Whether the wallet has admin privileges
         '401':
           $ref: '#/components/responses/Unauthorized'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
   /auth/public-token:
     get:
       operationId: getPublicToken
@@ -99,10 +91,14 @@ paths:
                   access_token:
                     type: string
                     description: JWT access token with public-only permissions
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
 components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   schemas:
     ErrorResponse:
       type: object
@@ -124,13 +120,6 @@ components:
         signature:
           type: string
           description: EIP-191 signature of the message
-  responses:
-    Unauthorized:
-      description: Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     BearerAuth:
       type: http
@@ -142,6 +131,3 @@ components:
       in: query
       name: token
       description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
-x-refined-from:
-- itsgloria-ai-openapi.json
-- itsgloria-ai-openapi.yml

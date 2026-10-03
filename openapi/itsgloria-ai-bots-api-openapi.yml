@@ -1,16 +1,14 @@
 openapi: 3.2.0
 info:
-  title: Itsgloria Ai Bots API
+  title: Gloria Terminal Bots API
   version: 1.0.0
+  description: AI-powered crypto intelligence API providing real-time news with sentiment analysis, market narratives, category recaps, and articles.
   contact:
     name: Gloria Terminal
     url: https://itsgloria.ai
-  description: 'Operations tagged Bots across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://ai.gloriaterminal.com
   description: Production
-- url: https://ai-hub.cryptobriefing.com
-  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
 security:
 - BearerAuth: []
 - TokenQuery: []
@@ -102,9 +100,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
 components:
   responses:
     NotFound:
@@ -126,32 +121,6 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
-    SocialPlatformBot:
-      type: object
-      required:
-      - id
-      - label
-      - platform
-      - platform_user_id
-      - platform_channel_id
-      - created_at
-      - wallet_address
-      properties:
-        id:
-          type: string
-        label:
-          type: string
-        platform:
-          type: string
-        platform_user_id:
-          type: string
-        platform_channel_id:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-        wallet_address:
-          type: string
     RegisterBotRequest:
       type: object
       required:
@@ -180,6 +149,32 @@ components:
         detail:
           type: string
           description: Error message
+    SocialPlatformBot:
+      type: object
+      required:
+      - id
+      - label
+      - platform
+      - platform_user_id
+      - platform_channel_id
+      - created_at
+      - wallet_address
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        platform:
+          type: string
+        platform_user_id:
+          type: string
+        platform_channel_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        wallet_address:
+          type: string
   securitySchemes:
     BearerAuth:
       type: http
@@ -191,6 +186,3 @@ components:
       in: query
       name: token
       description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
-x-refined-from:
-- itsgloria-ai-openapi.json
-- itsgloria-ai-openapi.yml

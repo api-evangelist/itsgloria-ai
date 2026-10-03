@@ -1,16 +1,14 @@
 openapi: 3.2.0
 info:
-  title: Itsgloria Ai Narratives API
+  title: Gloria Terminal Narratives API
   version: 1.0.0
+  description: AI-powered crypto intelligence API providing real-time news with sentiment analysis, market narratives, category recaps, and articles.
   contact:
     name: Gloria Terminal
     url: https://itsgloria.ai
-  description: 'Operations tagged Narratives across 2 of this provider''s published API definitions: itsgloria-ai-openapi.json, itsgloria-ai-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://ai.gloriaterminal.com
   description: Production
-- url: https://ai-hub.cryptobriefing.com
-  description: Production (documented base URL - docs.itsgloria.ai API Integration; verified live 2026-09-19 by API Evangelist)
 security:
 - BearerAuth: []
 - TokenQuery: []
@@ -38,9 +36,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
   /narratives/{id}:
     get:
       operationId: getNarrativeById
@@ -64,11 +59,29 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-    servers:
-    - url: https://ai.gloriaterminal.com
-      description: Production
 components:
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
     Narrative:
       type: object
       required:
@@ -97,27 +110,6 @@ components:
             type: object
             additionalProperties: true
           description: Associated news items
-    ErrorResponse:
-      type: object
-      required:
-      - detail
-      properties:
-        detail:
-          type: string
-          description: Error message
-  responses:
-    Unauthorized:
-      description: Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     BearerAuth:
       type: http
@@ -129,6 +121,3 @@ components:
       in: query
       name: token
       description: JWT token passed as a query parameter. Equivalent to `BearerAuth`.
-x-refined-from:
-- itsgloria-ai-openapi.json
-- itsgloria-ai-openapi.yml
