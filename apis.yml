@@ -34,6 +34,10 @@ x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest st
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
+x-docs-platform: docusaurus
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-10-03
+x-docs-hosting: github-pages
 tags:
 - Company
 - News
@@ -119,6 +123,8 @@ apis:
   humanURL: https://docs.itsgloria.ai/gloria-data-platform/api-integration/
   baseURL: https://ai-hub.cryptobriefing.com
   tags:
+  - APIKeys
+  tags_raw:
   - API Keys
   properties:
   - type: OpenAPI
@@ -379,6 +385,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/itsgloria-ai-capability-edges.yml
+  name: Gloria Business Capability Map
 - type: Overlay
   url: overlays/itsgloria-ai-openapi-overlay.yaml
 - type: DomainSecurity
