@@ -92,13 +92,6 @@ paths:
                     type: string
                     description: JWT access token with public-only permissions
 components:
-  responses:
-    Unauthorized:
-      description: Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   schemas:
     ErrorResponse:
       type: object
@@ -120,6 +113,13 @@ components:
         signature:
           type: string
           description: EIP-191 signature of the message
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     BearerAuth:
       type: http

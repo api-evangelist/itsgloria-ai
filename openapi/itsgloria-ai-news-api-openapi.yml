@@ -119,34 +119,15 @@ paths:
         '500':
           $ref: '#/components/responses/InternalError'
 components:
-  responses:
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Unauthorized:
-      description: Missing or invalid authentication token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    InternalError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   schemas:
-    TokenSummaryResponse:
+    ErrorResponse:
       type: object
       required:
-      - summary
+      - detail
       properties:
-        summary:
+        detail:
           type: string
-          description: AI-generated 24-hour summary for the token
+          description: Error message
     NewsItem:
       type: object
       required:
@@ -213,14 +194,33 @@ components:
           - string
           - 'null'
           description: ID of the parent narrative thread
-    ErrorResponse:
+    TokenSummaryResponse:
       type: object
       required:
-      - detail
+      - summary
       properties:
-        detail:
+        summary:
           type: string
-          description: Error message
+          description: AI-generated 24-hour summary for the token
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     BearerAuth:
       type: http
