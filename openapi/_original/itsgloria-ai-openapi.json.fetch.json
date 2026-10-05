@@ -1,0 +1,12 @@
+{
+ "url": "https://www.itsgloria.ai/openapi.json",
+ "requested_url": "https://www.itsgloria.ai/openapi.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 29708,
+ "sha256": "5e3fb4279a17a0862e23829ea46fb7b5c7ee77440c64e3f328afb2d2578df1f9",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
