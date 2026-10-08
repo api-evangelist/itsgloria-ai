@@ -92,3 +92,44 @@ plans:
   - {resource: GET /news-by-keyword, price: '0.05'}
   - {resource: GET /recaps, price: '0.10'}
   note: prices verified against the live 402 challenges (maxAmountRequired 30000 / 31000 / 50000 / 100000 in 6-decimal USDC)
+x-canonical:
+  generated: '2026-10-08'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - hybrid
+  - metered
+  - negotiated
+  - subscription
+  units: []
+  plans:
+  - name: Free
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: Plus
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
+  - name: Elite
+    access: other
+    model: hybrid
+    model_how: derived
+    units: []
+    periods: []
+  - name: Enterprise
+    access: other
+    model: negotiated
+    model_how: derived
+    units: []
+    periods: []
+  - name: x402 pay-per-request API
+    access: other
+    model: metered
+    model_how: stated
+    units: []
+    periods: []
