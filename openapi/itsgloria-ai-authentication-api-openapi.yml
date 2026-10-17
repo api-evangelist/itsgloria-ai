@@ -93,14 +93,6 @@ paths:
                     description: JWT access token with public-only permissions
 components:
   schemas:
-    ErrorResponse:
-      type: object
-      required:
-      - detail
-      properties:
-        detail:
-          type: string
-          description: Error message
     VerifyRequest:
       type: object
       required:
@@ -113,6 +105,14 @@ components:
         signature:
           type: string
           description: EIP-191 signature of the message
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
   responses:
     Unauthorized:
       description: Missing or invalid authentication token

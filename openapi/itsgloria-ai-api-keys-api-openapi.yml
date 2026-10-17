@@ -85,6 +85,28 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    TokenRequest:
+      type: object
+      required:
+      - name
+      - allowed_feed_categories
+      properties:
+        name:
+          type: string
+          description: Label for the token
+        allowed_feed_categories:
+          type: array
+          items:
+            type: string
+          description: Feed categories this token can access
+    ErrorResponse:
+      type: object
+      required:
+      - detail
+      properties:
+        detail:
+          type: string
+          description: Error message
     ApiToken:
       type: object
       required:
@@ -109,28 +131,6 @@ components:
         expires_at:
           type: string
           format: date-time
-    ErrorResponse:
-      type: object
-      required:
-      - detail
-      properties:
-        detail:
-          type: string
-          description: Error message
-    TokenRequest:
-      type: object
-      required:
-      - name
-      - allowed_feed_categories
-      properties:
-        name:
-          type: string
-          description: Label for the token
-        allowed_feed_categories:
-          type: array
-          items:
-            type: string
-          description: Feed categories this token can access
   responses:
     Unauthorized:
       description: Missing or invalid authentication token
