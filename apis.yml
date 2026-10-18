@@ -41,7 +41,6 @@ x-docs-hosting: github-pages
 tags:
 - Company
 - News
-- Crypto
 - Cryptocurrency
 - Market Intelligence
 - Sentiment Analysis
@@ -79,6 +78,12 @@ apis:
   - x402
   - Micropayments
   - News
+  - Cryptocurrency
+  - Agents
+  tags_raw:
+  - x402
+  - Micropayments
+  - News
   - Crypto
   - Agents
   properties:
@@ -98,6 +103,12 @@ apis:
   humanURL: https://www.itsgloria.ai/mcp
   baseURL: https://mcp.itsgloria.ai/mcp
   tags:
+  - MCP
+  - Agents
+  - News
+  - Cryptocurrency
+  - x402
+  tags_raw:
   - MCP
   - Agents
   - News
