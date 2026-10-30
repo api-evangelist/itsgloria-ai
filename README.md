@@ -64,7 +64,141 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Gloria (Gloria AI Ltd., a Crypto Briefing product) is an AI-powered crypto and prediction-market news intelligence platform. Its data core is exposed as a 20-operation REST API (OpenAPI 3.0.3, base https://ai-hub.cryptobriefing.com, SIWE wallet / API-token auth), a WebSocket push feed, a hosted MCP server at https://mcp.itsgloria.ai/mcp (7 tools, anonymous tools/list) and an x402 pay-per-request API at https://api.itsgloria.ai (USDC on Base).
-- https://itsgloria.ai/
-- https://docs.itsgloria.ai/
-- https://www.itsgloria.ai/mcp
+Gloria (Gloria AI Ltd., a Crypto Briefing product) is an AI-powered crypto and prediction-market news intelligence platform: a real-time feed of curated headlines scraped from crypto Twitter and newswires, filtered by a multi-stage LLM pipeline and enriched with sentiment, entity extraction, narratives, category recaps and long-form articles. The same data core is exposed four ways - a 20-operation REST API (OpenAPI 3.0.3 at itsgloria.ai/openapi.json, base https://ai-hub.cryptobriefing.com) authenticated by SIWE wallet signature or long-lived API tokens, a WebSocket push feed, a hosted MCP server at mcp.itsgloria.ai with seven tools that answers an anonymous tools/list, and an x402 pay-per-request API at api.itsgloria.ai settled in USDC on Base - plus Telegram and Discord bots.
+
+**Areas:** Company · News · Cryptocurrency · Market Intelligence · Sentiment Analysis · Prediction Markets · Artificial Intelligence · MCP · x402 · WebSocket · Agents
+
+## Gloria on APIs.io
+
+Everything profiled for Gloria is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/itsgloria-ai/](https://apis.io/providers/itsgloria-ai/)** — or go straight to one of the APIs or properties below.
+
+### APIs (12)
+
+- [Gloria X402 API](https://apis.io/apis/itsgloria-ai/gloria-x402-api/) — Pay-per-request access to Gloria news over the x402 protocol with no account or API key: GET /news ($0.03), /news-ticker-summary ($0.031), /news-by-keyword…
+- [Gloria MCP Server](https://apis.io/apis/itsgloria-ai/gloria-mcp-server/) — Hosted, remote MCP server (Streamable HTTP at https://mcp.itsgloria.ai/mcp, serverInfo "Gloria AI" 1.26.0, protocol 2025-06-18) exposing seven tools - five…
+- [Gloria API Keys API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-api-keys-api/) — Manage long-lived API tokens
+- [Gloria Articles API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-articles-api/) — Long-form articles generated from news events
+- [Gloria Authentication API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-authentication-api/) — Wallet-based authentication (SIWE) and token management
+- [Gloria Bots API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-bots-api/) — Social platform bot registration (Telegram, Discord)
+- [Gloria Categories API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-categories-api/) — Available feed categories
+- [Gloria Health API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-health-api/) — Service health checks
+- [Gloria Narratives API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-narratives-api/) — Market narrative threads grouping related news
+- [Gloria News API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-news-api/) — Real-time crypto news feed with sentiment analysis
+- [Gloria Recaps API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-recaps-api/) — Periodic summaries per feed category
+- [Gloria WebSocket API](https://apis.io/apis/itsgloria-ai/itsgloria-ai-websocket-api/) — Real-time news feed via WebSocket
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Itsgloria Ai Websocket Feed](https://apis.io/asyncapis/itsgloria-ai/itsgloria-ai-websocket-feed/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [Gloria AI](https://apis.io/servers/itsgloria-ai/gloria-ai/)
+
+#### Agentic access (1)
+
+Which operations an agent can call, which act, and which need a human in the loop.
+
+- [Itsgloria Ai Agentic Access](https://apis.io/agentic-access/itsgloria-ai/itsgloria-ai-agentic-access/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Itsgloria Ai Openapi Overlay](https://apis.io/overlays/itsgloria-ai/itsgloria-ai-openapi-overlay/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Itsgloria Ai Authentication](https://apis.io/security/itsgloria-ai/itsgloria-ai-authentication/)
+- [Itsgloria Ai Domain Security](https://apis.io/security/itsgloria-ai/itsgloria-ai-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Itsgloria Ai Plans Pricing](https://apis.io/plans/itsgloria-ai/itsgloria-ai-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Itsgloria Ai Rate Limits](https://apis.io/rate-limits/itsgloria-ai/itsgloria-ai-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://itsgloria.ai/)
+- [Documentation](https://docs.itsgloria.ai/)
+- [Getting started](https://docs.itsgloria.ai/gloria-data-platform/overview/)
+- [API reference](https://docs.itsgloria.ai/gloria-data-platform/api-integration/)
+- [Pricing](https://www.itsgloria.ai/pricing)
+- [Support](https://discord.gg/UFa4HK2Vjv)
+- [Terms of service](https://www.itsgloria.ai/terms-of-use)
+- [Privacy policy](https://www.itsgloria.ai/privacy-policy)
+- [GitHub](https://github.com/cryptobriefing-labs)
+
+## API Evangelist rating
+
+**Kin Score 50.0** — developing · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 68.3 |
+| Contract quality | 49.9 |
+| Contract governance | 18.2 |
+| Operational transparency | 31.6 |
+| Developer ergonomics | 56.5 |
+| Access clarity | 63.2 |
+
+**Agent readiness 34.0** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | derived (partial credit) |
+| Reversibility Documented | — |
+| MCP Server | documented (partial credit) |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | — |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 22.7** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/itsgloria-ai/](https://apis.io/providers/itsgloria-ai/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Gloria: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/itsgloria-ai/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
